@@ -73,6 +73,8 @@ export function InboxView(props: {
   selected: MessageRow | null;
   messageBase: (id: number) => string;
   waitUrl: string;
+  /** Where live updates go when mail arrives (default: reload this URL). */
+  nextUrl?: string;
   images: boolean;
   header?: Child;
 }) {
@@ -91,7 +93,7 @@ export function InboxView(props: {
             {relTime(inbox.expires_at)}
           </div>
         </div>
-        <span class="live" data-wait={props.waitUrl}>waiting for mail</span>
+        <span class="live" data-wait={props.waitUrl} data-next={props.nextUrl}>waiting for mail</span>
       </div>
       {props.header}
       {messages.length === 0 ? (

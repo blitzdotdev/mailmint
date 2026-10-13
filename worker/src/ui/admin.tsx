@@ -211,6 +211,7 @@ async function renderInbox(c: Context<AdminEnv>, inbox: InboxRow, notice?: unkno
         selected={selected && selected.inbox_id === inbox.id ? selected : null}
         messageBase={(id) => `/admin/messages/${id}`}
         waitUrl={`/admin/wait/${enc}?since=${messages[0]?.id ?? 0}`}
+        nextUrl={`/admin/inbox/${enc}`}
         images={c.req.query("images") === "1"}
         header={
           <div class="row small" style="margin-top:12px">

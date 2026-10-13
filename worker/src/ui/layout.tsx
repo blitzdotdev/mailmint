@@ -56,7 +56,9 @@ if (live) {
     for (;;) {
       try {
         const r = await fetch(url, { headers: { accept: "application/json" } });
-        if (r.ok) { const j = await r.json(); if (j.message || j.changed) { location.reload(); return; } }
+        // data-next: where to go on new mail. Pages rendered as a POST response (inbox just
+        // created) must navigate, not reload, or the browser asks to resubmit the form.
+        if (r.ok) { const j = await r.json(); if (j.message || j.changed) { location.replace(live.getAttribute("data-next") || location.href); return; } }
         else await new Promise((r) => setTimeout(r, 5000));
       } catch { await new Promise((r) => setTimeout(r, 5000)); }
     }
