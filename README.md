@@ -80,6 +80,9 @@ Share links expose the same calls under `/i/<token>/…` (`/wait`, `/messages`, 
 
 ## CLI
 
+Zero dependencies, Node 22.21+. Until it's on npm, run it from a checkout (`node cli/bin/burnermail.mjs …`) or
+link it onto your PATH: `ln -s "$PWD/cli/bin/burnermail.mjs" ~/.local/bin/burnermail`.
+
 ```
 burnermail login --url https://mail.example.com --key bm_key_…   # key from /admin/keys
 burnermail new [name] [--ttl 1d] [--label TEXT]

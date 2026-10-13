@@ -1,6 +1,10 @@
 # burnermail: self-hosted disposable email on Cloudflare (plan)
 
-> Provisional name (rename before publishing). This is a plan only: no code, no repo, nothing deployed. Decisions are at the bottom.
+> **Status 2026-10-13: built and live at https://mail.aisocket.dev** (catch-all `*@aisocket.dev`). This file is the original
+> plan, kept for the research and the decisions; README.md, docs/ and issues/open/ describe what exists now.
+> Deviations: the catch-all is set by `scripts/catch-all.sh` (wrangler `addresses` needs account-level permissions,
+> see issues/open/ops-addresses-permission.md); owner dashboard is behind Cloudflare Access; MCP uses OAuth.
+> Name is provisional (rename before publishing).
 
 ## Goal
 
