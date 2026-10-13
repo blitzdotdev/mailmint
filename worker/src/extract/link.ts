@@ -38,24 +38,34 @@ const MAX_RAW_LINKS = 400;
 
 const BARE_URL_RE = /(?<![\w@.\/=])https?:\/\/[^\s<>"'` 　）】」]+/gi;
 
+/** Longest bare URL considered; longer runs are not verification links. */
+const MAX_URL_CHARS = 4096;
+
 function trimUrlTail(u: string): string {
-	let url = u;
-	for (;;) {
-		const last = url[url.length - 1] ?? '';
+	// Parentheses are counted once and adjusted as characters are trimmed (re-counting
+	// on every pass is quadratic for a URL followed by thousands of ')').
+	let end = Math.min(u.length, MAX_URL_CHARS);
+	let opens = 0;
+	let closes = 0;
+	for (let i = 0; i < end; i++) {
+		const c = u.charCodeAt(i);
+		if (c === 40) opens++;
+		else if (c === 41) closes++;
+	}
+	while (end > 0) {
+		const last = u[end - 1] ?? '';
 		if (/[.,;:!?'"*\]}>]/.test(last)) {
-			url = url.slice(0, -1);
+			end--;
 			continue;
 		}
-		if (last === ')') {
-			const opens = (url.match(/\(/g) ?? []).length;
-			const closes = (url.match(/\)/g) ?? []).length;
-			if (closes > opens) {
-				url = url.slice(0, -1);
-				continue;
-			}
+		if (last === ')' && closes > opens) {
+			end--;
+			closes--;
+			continue;
 		}
-		return url;
+		break;
 	}
+	return u.slice(0, end);
 }
 
 /** Bare URLs in plain text with the sentence that introduces each one. */

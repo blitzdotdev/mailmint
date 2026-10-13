@@ -89,3 +89,31 @@ test("Access dev bypass only for localhost hosts", async () => {
   assert.equal(cfg.ok, false);
   assert.equal(cfg.code, "access_missing");
 });
+
+test("dev bypass also requires the original Host (miniflare MF-Original-Hostname) to be local", async () => {
+  const env = { DEV_BYPASS_ACCESS: "1" };
+  const req = (orig) => new Request("http://localhost:8787/admin", { headers: orig ? { "MF-Original-Hostname": orig } : {} });
+  assert.equal((await verifyAccessRequest(req("localhost"), env)).ok, true);
+  assert.equal((await verifyAccessRequest(req("8787.teeny.aibox.localhost"), env)).ok, true);
+  assert.equal((await verifyAccessRequest(req("192.168.1.20"), env)).ok, false, "LAN client by IP");
+  assert.equal((await verifyAccessRequest(req("mail.aisocket.dev"), env)).ok, false);
+});
+
+import { asciiHeader, contentDisposition, fitBytes, utf8Length } from "../src/lib/text.ts";
+
+test("fitBytes caps UTF-8 bytes without splitting characters", () => {
+  assert.equal(fitBytes("hello", 3), "hel");
+  assert.equal(fitBytes("short", 100), "short");
+  const cjk = "验证码".repeat(1000); // 3 bytes per char
+  const cut = fitBytes(cjk, 1000);
+  assert.ok(utf8Length(cut) <= 1000);
+  assert.equal(cut.length, 333);
+  assert.ok(!cut.includes("�"));
+});
+
+test("attachment headers are ASCII-safe", () => {
+  assert.equal(asciiHeader('a"b\\c\u0000\r\nd'), "a_b_c___d");
+  const cd = contentDisposition("Rechnung März.pdf");
+  assert.match(cd, /^attachment; filename="Rechnung M_rz\.pdf"; filename\*=UTF-8''Rechnung%20M%C3%A4rz\.pdf$/);
+  assert.doesNotThrow(() => new Headers({ "Content-Disposition": contentDisposition("名前\u0000\".txt") }));
+});

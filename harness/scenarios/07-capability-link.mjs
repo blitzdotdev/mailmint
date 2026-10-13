@@ -42,14 +42,23 @@ export default async function (t) {
   assert.deepEqual(list.json.inboxes.map((i) => i.address), [a.address]);
 
   // HTML body is served sandboxed.
-  await t.sendEmail({ to: a.address, subject: "html", html: '<p>hi</p><script>alert(1)</script><img src="https://tracker.example/p.gif">' });
+  await t.sendEmail({
+    to: a.address,
+    subject: "html",
+    html: '<meta name="referrer" content="unsafe-url"><p>hi</p><script>alert(1)</script><img src="https://tracker.example/p.gif" referrerpolicy="unsafe-url"><a href="https://x.example" referrerpolicy=unsafe-url>x</a>',
+  });
   const htmlMsg = (await (await t.fetch(`${base}/messages?limit=1`)).json()).messages[0];
   const body = await t.fetch(`${base}/messages/${htmlMsg.id}/html`);
   const csp = body.headers.get("content-security-policy");
   assert.match(csp, /sandbox/);
   assert.ok(!/allow-scripts/.test(csp));
   assert.match(csp, /img-src data:(;|$)/);
-  assert.match(body.headers.get("content-security-policy"), /frame-ancestors 'self'/);
+  assert.match(csp, /frame-ancestors 'self'/);
+  assert.match(csp, /form-action 'none'/);
+  assert.equal(body.headers.get("referrer-policy"), "no-referrer");
+  const served = await body.text();
+  assert.ok(!/unsafe-url/i.test(served), "email cannot loosen the referrer policy");
+  assert.match(served, /<meta name="referrer" content="no-referrer">/);
 
   // Burn it via the link.
   const del = await t.fetch(base, { method: "DELETE" });

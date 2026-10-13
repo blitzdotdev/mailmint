@@ -1,6 +1,7 @@
 import { Hono, type Context } from "hono";
 import type { Env } from "../env.ts";
 import { ApiError } from "../lib/errors.ts";
+import { asciiHeader, contentDisposition } from "../lib/text.ts";
 import { deleteInbox, listInboxes, type InboxRow } from "../store/inboxes.ts";
 import { latestMessageId, listMessages } from "../store/messages.ts";
 import { principalFromBearer, principalFromToken, requireOwner, type Principal } from "./auth.ts";
@@ -85,10 +86,16 @@ async function listMessagesResponse(c: C, inbox: InboxRow, base: MessageBase) {
   const order = q.order === "asc" ? "asc" : q.order === undefined || q.order === "desc" ? "desc" : null;
   if (!order) throw new ApiError(400, "invalid_request", "order must be asc or desc");
   const rows = await listMessages(c.env.DB, inbox.id, { since, limit, order });
+  const hasMore = rows.length === limit;
+  // `cursor` is safe to pass back as `since`: it never skips past unseen messages.
+  // Newest-first pages that were cut off by `limit` leave older unseen messages
+  // below them, so the cursor only advances when the page is complete.
+  const advance = order === "asc" || !hasMore;
   return c.json({
     inbox: inbox.address,
     messages: rows.map((m) => presentMessageSummary(m, inbox.address, base)),
-    cursor: Math.max(since, ...rows.map((m) => m.id)),
+    cursor: advance ? Math.max(since, ...rows.map((m) => m.id)) : since,
+    has_more: hasMore,
   });
 }
 
@@ -129,10 +136,22 @@ async function rawResponse(c: C, id: number) {
   });
 }
 
+/**
+ * Email HTML may try to loosen the referrer policy (which would leak share-link
+ * tokens from our URLs to sites it links to). Bounded patterns keep this linear.
+ */
+function neutralizeReferrer(html: string): string {
+  return html
+    .replace(/<meta\b[^>]{0,500}?\bname\s*=\s*["']?referrer[^>]{0,500}>/gi, "")
+    .replace(/\sreferrerpolicy\s*=\s*(?:"[^"]{0,100}"|'[^']{0,100}'|[^\s>]{1,100})/gi, "");
+}
+
 export async function htmlResponse(_c: Context, html: string | null, allowImages: boolean): Promise<Response> {
-  const body = html ?? "<p style=\"font-family:system-ui;color:#71717a\">This message has no HTML part.</p>";
+  const body = html === null
+    ? "<p style=\"font-family:system-ui;color:#71717a\">This message has no HTML part.</p>"
+    : neutralizeReferrer(html);
   // Links open in a new tab; scripts never run (CSP sandbox without allow-scripts).
-  const doc = `<!doctype html><meta charset="utf-8"><base target="_blank">${body}`;
+  const doc = `<!doctype html><meta charset="utf-8"><meta name="referrer" content="no-referrer"><base target="_blank">${body}`;
   return new Response(doc, {
     headers: {
       "Content-Type": "text/html; charset=utf-8",
@@ -142,8 +161,10 @@ export async function htmlResponse(_c: Context, html: string | null, allowImages
         "style-src 'unsafe-inline'",
         "font-src data:",
         allowImages ? "img-src data: https: http:" : "img-src data:",
+        "form-action 'none'",
         "frame-ancestors 'self'",
       ].join("; "),
+      "Referrer-Policy": "no-referrer",
       "X-Frame-Options": "SAMEORIGIN",
     },
   });
@@ -152,13 +173,12 @@ export async function htmlResponse(_c: Context, html: string | null, allowImages
 async function attachmentResponse(c: C, id: number, index: number) {
   const m = await findMessage(c.env, c.get("principal"), id);
   const { meta, body } = await messageAttachment(c.env, m, index);
-  const filename = (meta.filename ?? `attachment-${index}`).replace(/["\\\r\n]/g, "_");
   return new Response(body, {
     headers: {
       // Never render attachments inline on our origin.
       "Content-Type": "application/octet-stream",
-      "Content-Disposition": `attachment; filename="${filename}"`,
-      "X-Original-Content-Type": meta.content_type,
+      "Content-Disposition": contentDisposition(meta.filename ?? `attachment-${index}`),
+      "X-Original-Content-Type": asciiHeader(meta.content_type),
     },
   });
 }
@@ -293,3 +313,4 @@ capability.get("/messages/:id/html", async (c) => {
 });
 capability.get("/messages/:id/attachments/:n", async (c) =>
   attachmentResponse(c, messageId(c), intParam(c.req.param("n"), "n", 0, 0, 100)));
+

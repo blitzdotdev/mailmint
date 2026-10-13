@@ -1,4 +1,5 @@
 import type { Env } from "../env.ts";
+import { signalStub } from "../lib/signal-stub.ts";
 
 export interface InboxRow {
   id: number;
@@ -72,7 +73,8 @@ export async function claimInbox(
 
 /**
  * Issue a new capability token (the old link stops working). A catch-all inbox
- * becomes an API inbox with the given expiry; an API inbox keeps its expiry.
+ * becomes an API inbox with the given expiry; an API inbox keeps its expiry
+ * unless it already expired (a fresh link to a dead inbox would never work).
  */
 export async function setInboxToken(
   db: D1Database,
@@ -81,10 +83,10 @@ export async function setInboxToken(
 ): Promise<InboxRow | null> {
   return db
     .prepare(
-      `UPDATE inboxes SET token_hash = ?,
-         expires_at = CASE WHEN origin = 'auto' THEN ? ELSE expires_at END,
+      `UPDATE inboxes SET token_hash = ?1,
+         expires_at = CASE WHEN origin = 'auto' OR expires_at <= strftime('%Y-%m-%dT%H:%M:%fZ', 'now') THEN ?2 ELSE expires_at END,
          origin = 'api'
-       WHERE id = ?
+       WHERE id = ?3
        RETURNING ${COLUMNS}`,
     )
     .bind(input.tokenHash, input.autoExpiresAt, id)
@@ -142,10 +144,24 @@ export function inboxPrefixes(inboxId: number): string[] {
 }
 
 /**
- * Delete an inbox completely: R2 objects, then the row (messages cascade),
- * then the signal state. R2 first so a failure leaves the row for the purge cron to retry.
+ * Delete an inbox completely: the row (messages cascade), its R2 objects and its
+ * signal state. Returns false if nothing was deleted.
+ *
+ * `onlyIfExpired` (purge, expired catch-all on delivery) makes the row delete
+ * conditional on the inbox *still* being expired, so an extension that lands
+ * after the expired row was read wins over the purge.
  */
-export async function deleteInbox(env: Env, inbox: Pick<InboxRow, "id" | "address">): Promise<void> {
+export async function deleteInbox(
+  env: Env,
+  inbox: Pick<InboxRow, "id">,
+  options: { onlyIfExpired?: boolean } = {},
+): Promise<boolean> {
+  const deleted = options.onlyIfExpired
+    ? await env.DB.prepare("DELETE FROM inboxes WHERE id = ? AND expires_at <= ? RETURNING id")
+        .bind(inbox.id, new Date().toISOString())
+        .first()
+    : await env.DB.prepare("DELETE FROM inboxes WHERE id = ? RETURNING id").bind(inbox.id).first();
+  if (!deleted) return false;
   for (const prefix of inboxPrefixes(inbox.id)) {
     let cursor: string | undefined;
     do {
@@ -154,6 +170,6 @@ export async function deleteInbox(env: Env, inbox: Pick<InboxRow, "id" | "addres
       cursor = page.truncated ? page.cursor : undefined;
     } while (cursor);
   }
-  await env.DB.prepare("DELETE FROM inboxes WHERE id = ?").bind(inbox.id).run();
-  await env.SIGNAL.get(env.SIGNAL.idFromName(inbox.address)).reset();
+  await signalStub(env, inbox.id).reset();
+  return true;
 }

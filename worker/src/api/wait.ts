@@ -1,5 +1,6 @@
 import type { Env } from "../env.ts";
-import { listMessages, type MessageRow } from "../store/messages.ts";
+import { signalStub } from "../lib/signal-stub.ts";
+import { getMessage, listMessages, type MessageRow } from "../store/messages.ts";
 
 export interface WaitFilter {
   from?: string | null;
@@ -39,13 +40,14 @@ export async function waitForMessage(
   timeoutMs: number,
 ): Promise<{ message: MessageRow | null; cursor: number }> {
   const deadline = Date.now() + timeoutMs;
-  const signal = env.SIGNAL.get(env.SIGNAL.idFromName(inbox.address));
+  const signal = signalStub(env, inbox.id);
   let cursor = since;
   let signalled = 0;
   for (;;) {
     const batch = await listMessages(env.DB, inbox.id, { since: cursor, limit: SCAN_BATCH, order: "asc" });
     for (const m of batch) {
-      if (matches(m, filter)) return { message: m, cursor: m.id };
+      // listMessages rows omit the bodies; return the full message.
+      if (matches(m, filter)) return { message: (await getMessage(env.DB, m.id)) ?? m, cursor: m.id };
       cursor = m.id;
     }
     if (batch.length === SCAN_BATCH) continue;

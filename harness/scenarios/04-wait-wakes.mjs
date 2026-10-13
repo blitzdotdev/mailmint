@@ -10,6 +10,7 @@ export default async function (t) {
   let r = await t.api("GET", `/v1/inboxes/${inbox.address}/wait?timeout=20`);
   assert.equal(r.status, 200);
   assert.equal(r.json.message.subject, "first");
+  assert.match(r.json.message.text, /111222/, "wait returns the full message, body included");
   assert.ok(Date.now() - started < 3000, "immediate");
   const cursor = r.json.cursor;
 

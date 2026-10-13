@@ -3,6 +3,7 @@ import { type AccessIdentity, requireWebAccess } from "../api/access.ts";
 import type { Principal } from "../api/auth.ts";
 import { createInbox, findInbox, findMessage, issueInboxLink, messageAttachment, messageHtml, updateInboxSettings, type CreatedInbox } from "../api/ops.ts";
 import { htmlResponse } from "../api/rest.ts";
+import { contentDisposition } from "../lib/text.ts";
 import { waitForMessage } from "../api/wait.ts";
 import type { Env } from "../env.ts";
 import { config } from "../lib/config.ts";
@@ -278,7 +279,7 @@ admin.get("/messages/:id/attachments/:n", async (c) => {
   return new Response(body, {
     headers: {
       "Content-Type": "application/octet-stream",
-      "Content-Disposition": `attachment; filename="${(meta.filename ?? `attachment-${index}`).replace(/["\\\r\n]/g, "_")}"`,
+      "Content-Disposition": contentDisposition(meta.filename ?? `attachment-${index}`),
     },
   });
 });

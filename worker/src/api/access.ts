@@ -86,11 +86,17 @@ const LOCAL_HOST = /^(localhost|127\.0\.0\.1|\[::1\]|[a-z0-9.-]+\.localhost)(:\d
 
 /**
  * Verify Access, or in local dev (DEV_BYPASS_ACCESS=1 in .dev.vars) accept a
- * request whose Host is localhost. The bypass is ignored on any other host.
+ * request whose Host is local. The bypass is ignored on any other host.
+ *
+ * Under `wrangler dev --local-upstream`, miniflare rewrites request.url to the
+ * upstream host and passes the Host the client actually used in
+ * MF-Original-Hostname; both must be local, so a LAN client hitting a dev
+ * server bound to 0.0.0.0 by IP doesn't get owner access.
  */
 export async function verifyAccessRequest(request: Request, env: DevAccessEnv): Promise<AccessResult> {
   const host = new URL(request.url).host;
-  if (env.DEV_BYPASS_ACCESS === "1" && LOCAL_HOST.test(host)) {
+  const original = request.headers.get("MF-Original-Hostname");
+  if (env.DEV_BYPASS_ACCESS === "1" && LOCAL_HOST.test(host) && (original === null || LOCAL_HOST.test(original))) {
     return { ok: true, identity: { email: "dev@localhost", sub: "dev" } };
   }
   return verifyWebAccess(request.headers.get("Cf-Access-Jwt-Assertion"), env);

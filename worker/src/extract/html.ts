@@ -76,7 +76,14 @@ const MAX_DEPTH = 256;
 /** Only short emphasised elements count: a whole bold paragraph is not "highlighted". */
 const MAX_EMPHASIS_CHARS = 60;
 
-const TAG_RE = /<(\/?)([a-zA-Z][a-zA-Z0-9:-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>|<![^>]*>|<\?[^>]*>/g;
+/**
+ * Applied to one `<…>` slice found with indexOf (never to the whole document): a
+ * global tag regex that fails at every `<` of unclosed-tag soup is quadratic.
+ * Trade-off: a `>` inside a quoted attribute value ends the tag early.
+ */
+const TAG_SLICE_RE = /^<(\/?)([a-zA-Z][a-zA-Z0-9:-]*)([^>]*)>$/;
+/** Longest style attribute inspected for emphasis; real ones are far shorter. */
+const MAX_STYLE = 2048;
 const ATTR_RE = /([^\s=\/>"']+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>"']+)))?/g;
 
 function parseAttrs(raw: string): Map<string, string> {
@@ -110,7 +117,7 @@ function styleFlags(tag: string, attrs: Map<string, string>): number {
 	}
 	const style = attrs.get('style');
 	if (style) {
-		const s = style.toLowerCase();
+		const s = style.slice(0, MAX_STYLE).toLowerCase();
 		const fs = /font-size\s*:\s*([\d.]+)\s*(px|pt|em|rem|%)?/.exec(s);
 		if (fs) {
 			const v = parseFloat(fs[1] ?? '0');
@@ -124,7 +131,7 @@ function styleFlags(tag: string, attrs: Map<string, string>): number {
 			const unit = ls[2] ?? 'px';
 			if ((unit === 'em' || unit === 'rem') ? v >= 0.1 : v >= 1.5) f |= SPACED;
 		}
-		if (/font-family\s*:[^;]*(monospace|courier|consolas|menlo|monaco|sfmono|sf mono|ui-monospace|lucida console|roboto mono|source code)/.test(s)) f |= MONO;
+		if (/font-family\s*:[^;]{0,200}?(monospace|courier|consolas|menlo|monaco|sfmono|sf mono|ui-monospace|lucida console|roboto mono|source code)/.test(s)) f |= MONO;
 		const fw = /font-weight\s*:\s*(bold|bolder|[6-9]00)/.exec(s);
 		if (fw) f |= BOLD;
 	}
@@ -149,11 +156,49 @@ interface OpenEl {
  * Strip parts of an HTML document that never carry visible text:
  * comments (incl. MSO conditional blocks), <head>, <style>, <script>, <title>, <xml>.
  */
+const INVISIBLE_OPEN_RE = /<!--|<(style|script|title|xml|template|noscript|head)\b/gi;
+/** Unclosed, these run to the end of the document (as in browsers); the rest just drop their opening tag. */
+const RUNS_TO_END = new Set(['style', 'script']);
+
 function stripInvisible(html: string): string {
-	return html
-		.replace(/<!--[\s\S]*?-->/g, ' ')
-		.replace(/<(style|script|title|xml|template|noscript)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, ' ')
-		.replace(/<head\b[^>]*>[\s\S]*?<\/head\s*>/gi, ' ');
+	// One forward pass with indexOf / sticky searches: lazy `[\s\S]*?` regexes over the
+	// whole document go quadratic on unclosed `<!--` or `<style>` repeated many times.
+	const out: string[] = [];
+	let pos = 0;
+	// Once `</name>` isn't found ahead of some point it never will be later on:
+	// remember that, or repeated unclosed `<head>` rescans the document each time.
+	const noClose = new Set<string>();
+	INVISIBLE_OPEN_RE.lastIndex = 0;
+	let m: RegExpExecArray | null;
+	while ((m = INVISIBLE_OPEN_RE.exec(html)) !== null) {
+		const start = m.index;
+		let end: number;
+		if (m[0] === '<!--') {
+			const close = html.indexOf('-->', start + 4);
+			end = close === -1 ? html.length : close + 3;
+		} else {
+			const name = (m[1] ?? '').toLowerCase();
+			let close: RegExpExecArray | null = null;
+			if (!noClose.has(name)) {
+				const closeRe = new RegExp(`</${name}\\s*>`, 'gi');
+				closeRe.lastIndex = start + m[0].length;
+				close = closeRe.exec(html);
+				if (!close) noClose.add(name);
+			}
+			if (close) end = close.index + close[0].length;
+			else if (RUNS_TO_END.has(name)) end = html.length;
+			else {
+				const gt = html.indexOf('>', start);
+				end = gt === -1 ? html.length : gt + 1;
+			}
+		}
+		out.push(html.slice(pos, start), ' ');
+		pos = end;
+		if (end >= html.length) break;
+		INVISIBLE_OPEN_RE.lastIndex = end;
+	}
+	out.push(html.slice(pos));
+	return out.join('');
 }
 
 /** Convert email HTML to text + anchors + emphasis ranges. */
@@ -219,14 +264,28 @@ export function parseHtml(input: string): HtmlDoc {
 	};
 
 	let last = 0;
-	TAG_RE.lastIndex = 0;
-	let m: RegExpExecArray | null;
-	while ((m = TAG_RE.exec(html)) !== null) {
+	let pos = 0;
+	while (pos < html.length) {
 		if (len >= MAX_TEXT) break;
-		if (m.index > last) appendText(html.slice(last, m.index));
-		last = TAG_RE.lastIndex;
-		const name = m[2];
-		if (!name) continue; // doctype / processing instruction
+		const lt = html.indexOf('<', pos);
+		if (lt === -1) break;
+		const gt = html.indexOf('>', lt + 1);
+		if (gt === -1) break; // no complete tag left: the rest is text
+		const m = TAG_SLICE_RE.exec(html.slice(lt, gt + 1));
+		if (!m) {
+			const next = html[lt + 1];
+			if (next === '!' || next === '?') {
+				// doctype / processing instruction / stray markup declaration
+				if (lt > last) appendText(html.slice(last, lt));
+				last = pos = gt + 1;
+			} else {
+				pos = lt + 1; // a literal '<' in text
+			}
+			continue;
+		}
+		if (lt > last) appendText(html.slice(last, lt));
+		last = pos = gt + 1;
+		const name = m[2] ?? '';
 		const tag = name.toLowerCase();
 		const closing = m[1] === '/';
 		if (closing) {

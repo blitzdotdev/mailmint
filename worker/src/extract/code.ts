@@ -48,6 +48,8 @@ export const MAX_CODES = 5;
 
 /** Verification codes sit near the top; bounding input keeps CPU time predictable. */
 const MAX_SOURCE_CHARS = 60_000;
+/** Scoring is candidates × keyword hits; real verification mails have a handful of numbers. */
+const MAX_CANDIDATES = 300;
 
 type Shape = 'digits' | 'grouped3' | 'grouped4' | 'spaced' | 'pairs' | 'prefixed' | 'alnum' | 'capsGrouped';
 
@@ -259,7 +261,7 @@ interface Scored {
 function scoreSource(src: CodeSource, hasContext: boolean, subjectNamesCode: boolean, order: number): Scored[] {
 	const original = src.text.length > MAX_SOURCE_CHARS ? src.text.slice(0, MAX_SOURCE_CHARS) : src.text;
 	const t = normalize(original);
-	const candidates = findCandidates(t);
+	const candidates = findCandidates(t).slice(0, MAX_CANDIDATES);
 	if (candidates.length === 0) return [];
 	const hits = keywordHits(t);
 	const out: Scored[] = [];

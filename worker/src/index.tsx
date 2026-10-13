@@ -29,7 +29,9 @@ app.onError((error, c) => {
     if (error.status === 429) c.header("Retry-After", "60");
     return c.json(errorBody(error.code, error.message), error.status as 400);
   }
-  console.error("Unhandled error", { path: new URL(c.req.url).pathname, error: String(error), stack: (error as Error).stack });
+  // Share-link tokens live in the path; never write them to logs.
+  const path = new URL(c.req.url).pathname.replace(/^\/i\/[^/]+/, "/i/<token>");
+  console.error("Unhandled error", { path, error: String(error), stack: (error as Error).stack });
   return c.json(errorBody("internal", "Internal error"), 500);
 });
 

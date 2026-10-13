@@ -7,5 +7,5 @@
   "bin": { "burnermail": "bin/burnermail.mjs" },
   "files": ["bin", "README.md"],
   "scripts": { "test": "node bin/burnermail.mjs --help > /dev/null && echo \"cli ok (behaviour is covered by harness/scenarios/11-cli.mjs)\"" },
-  "engines": { "node": ">=22" }
+  "engines": { "node": ">=22.21" }
 }

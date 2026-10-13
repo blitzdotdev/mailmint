@@ -34,10 +34,13 @@ async function ownerKey(url) {
 export default async function (t) {
   const { assert } = t;
 
-  const strict = await t.state.startDev({ vars: { ACCEPT_UNKNOWN: "0" }, label: "strict" });
+  const strict = await t.state.startDev({ vars: { ACCEPT_UNKNOWN: "0", MAX_MESSAGES_PER_DAY: "3" }, label: "strict" });
   try {
-    const r = await deliver(strict.url, "nobody-made-this@aisocket.dev");
-    assert.ok(rejected(r), `unknown address rejected in strict mode: ${r.status} ${r.text}`);
+    // A flood to unknown addresses is rejected without using up the daily quota.
+    for (let i = 0; i < 6; i++) {
+      const r = await deliver(strict.url, `nobody-made-this-${i}@aisocket.dev`);
+      assert.ok(rejected(r), `unknown address rejected in strict mode: ${r.status} ${r.text}`);
+    }
     const key = await ownerKey(strict.url);
     const created = await (await fetch(`${strict.url}/v1/inboxes`, {
       method: "POST",

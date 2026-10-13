@@ -40,7 +40,8 @@ Exit codes: 0 ok, 1 error, 2 timed out.
 `;
 
 // ---------- proxy support (agent sandboxes) ----------
-// Node's fetch only honours HTTPS_PROXY with NODE_USE_ENV_PROXY=1; re-exec once with it set.
+// Node's fetch only honours HTTPS_PROXY with NODE_USE_ENV_PROXY=1 (Node >= 22.21 / 24.5);
+// re-exec once with it set.
 if ((process.env.HTTPS_PROXY || process.env.https_proxy || process.env.HTTP_PROXY || process.env.http_proxy) &&
     !process.env.NODE_USE_ENV_PROXY) {
   const r = spawnSync(process.execPath, process.argv.slice(1), {
@@ -53,6 +54,7 @@ if ((process.env.HTTPS_PROXY || process.env.https_proxy || process.env.HTTP_PROX
 // ---------- args ----------
 
 const BOOL = new Set(["json", "code", "link", "text", "html", "raw", "help"]);
+const VALUED = new Set(["url", "key", "ttl", "label", "domain", "from", "subject", "tag", "since", "timeout"]);
 
 function parseArgs(argv) {
   const positional = [];
@@ -64,6 +66,7 @@ function parseArgs(argv) {
     const eq = a.indexOf("=");
     const name = a.slice(2, eq === -1 ? undefined : eq);
     if (BOOL.has(name)) { flags[name] = true; continue; }
+    if (!VALUED.has(name)) fail(`unknown option --${name}. See burnermail --help`);
     const value = eq === -1 ? argv[++i] : a.slice(eq + 1);
     if (value === undefined) fail(`--${name} needs a value`);
     flags[name] = value;

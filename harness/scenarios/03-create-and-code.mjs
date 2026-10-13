@@ -32,8 +32,20 @@ export default async function (t) {
   assert.match(full.json.text, /Verification code: 482913/);
   assert.equal(full.json.inbox, inbox.address);
 
+  // Newest-first pages cut off by `limit` don't advance the cursor past unseen mail.
+  for (const n of [2, 3]) await t.sendEmail({ to: inbox.address, subject: `more ${n}`, text: "x" });
+  const page = await t.api("GET", `/v1/inboxes/${inbox.address}/messages?limit=2`);
+  assert.deepEqual(page.json.messages.map((x) => x.subject), ["more 3", "more 2"]);
+  assert.equal(page.json.has_more, true);
+  assert.equal(page.json.cursor, 0, "truncated desc page keeps since");
+  const asc = await t.api("GET", `/v1/inboxes/${inbox.address}/messages?order=asc&limit=2`);
+  assert.equal(asc.json.messages[0].id, m.id);
+  const rest = await t.api("GET", `/v1/inboxes/${inbox.address}/messages?order=asc&since=${asc.json.cursor}`);
+  assert.deepEqual(rest.json.messages.map((x) => x.subject), ["more 3"]);
+  assert.equal(rest.json.has_more, false);
+
   // Bare name resolves to the default domain.
   const byName = await t.api("GET", `/v1/inboxes/${inbox.address.split("@")[0]}`);
   assert.equal(byName.status, 200);
-  assert.equal(byName.json.message_count, 1);
+  assert.equal(byName.json.message_count, 3);
 }

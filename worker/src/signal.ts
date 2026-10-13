@@ -6,8 +6,8 @@ interface Waiter {
 }
 
 /**
- * One per inbox address (`idFromName(address)`). It stores no mail, only the
- * highest message id stored for the address, so long-polling `wait` requests
+ * One per inbox row (see lib/signal-stub.ts). It stores no mail, only the
+ * highest message id stored for the inbox, so long-polling `wait` requests
  * wake the moment `email()` commits a message instead of polling D1.
  *
  * No lost wakeups: `email()` inserts into D1 *then* calls `signal(id)`, and a
@@ -59,3 +59,4 @@ export class InboxSignal extends DurableObject {
     this.lastId = 0;
   }
 }
+

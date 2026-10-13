@@ -10,8 +10,8 @@ export async function purge(env: Env): Promise<{ inboxes: number; failed: number
   let failed = 0;
   for (const inbox of await expiredInboxes(env.DB, BATCH)) {
     try {
-      await deleteInbox(env, inbox);
-      inboxes++;
+      // Conditional: an inbox extended since it was listed is kept.
+      if (await deleteInbox(env, inbox, { onlyIfExpired: true })) inboxes++;
     } catch (error) {
       failed++;
       console.error("purge: deleteInbox failed", { inbox: inbox.id, error: String(error) });
