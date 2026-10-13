@@ -70,7 +70,7 @@ export function Layout(props: { title: string; nav?: boolean; children: Child })
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <meta name="referrer" content="no-referrer" />
+        {props.nav ? null : <meta name="referrer" content="no-referrer" />}
         <title>{props.title} · mailmint</title>
         <link rel="stylesheet" href="/assets/app.css" />
         <script src="/assets/app.js" defer></script>

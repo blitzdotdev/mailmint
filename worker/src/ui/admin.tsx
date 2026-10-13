@@ -21,21 +21,27 @@ export const admin = new Hono<AdminEnv>();
 
 admin.use("*", requireWebAccess);
 // Same-origin only for every state change (Access cookies ride along cross-site otherwise).
+// Sec-Fetch-Site is set by the browser and can't be forged by a page, so it decides when
+// present; Origin is the fallback (it can legitimately be "null" for same-origin posts
+// under some referrer policies, which is why it isn't checked first).
 admin.use("*", async (c, next) => {
   if (c.req.method !== "GET" && c.req.method !== "HEAD") {
-    const origin = c.req.header("Origin");
     const site = c.req.header("Sec-Fetch-Site");
-    if ((origin && origin !== new URL(c.req.url).origin) || (site && site !== "same-origin" && site !== "none")) {
-      return c.text("Cross-site request refused", 403);
-    }
+    const origin = c.req.header("Origin");
+    const crossSite = site
+      ? site !== "same-origin" && site !== "none"
+      : !!origin && origin !== new URL(c.req.url).origin;
+    if (crossSite) return c.text("Cross-site request refused", 403);
   }
   await next();
 });
 admin.use("*", async (c, next) => {
   await next();
   if (c.res.headers.get("Content-Type")?.startsWith("text/html") && !c.res.headers.has("Content-Security-Policy")) {
-    for (const [k, v] of Object.entries(PAGE_HEADERS)) c.res.headers.set(k, v);
+    for (const [k, v] of Object.entries(PAGE_HEADERS)) if (k !== "Referrer-Policy") c.res.headers.set(k, v);
   }
+  // Dashboard URLs carry no secrets; same-origin keeps a real Origin on our own form posts.
+  if (!c.res.headers.has("Referrer-Policy")) c.res.headers.set("Referrer-Policy", "same-origin");
 });
 
 function page(c: Context<AdminEnv>, title: string, body: unknown, status: 200 | 201 | 400 | 404 = 200) {

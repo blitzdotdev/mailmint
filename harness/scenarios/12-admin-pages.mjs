@@ -8,8 +8,23 @@ export default async function (t) {
       headers: { "content-type": "application/x-www-form-urlencoded", origin: t.url, "sec-fetch-site": "same-origin" },
       body,
     });
+  await t.sendEmail({ to: `admin-seed-${Date.now()}@aisocket.dev`, subject: "seed", text: "hello" });
   const home = await t.fetch("/admin", { headers: { accept: "text/html" } });
   assert.equal(home.status, 200);
+  assert.equal(home.headers.get("referrer-policy"), "same-origin", "real Origin on our own form posts");
+  // What Chrome actually sends for a same-origin form post under a no-referrer policy.
+  const nullOrigin = await t.fetch("/admin/inboxes", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded", origin: "null", "sec-fetch-site": "same-origin" },
+    body: "label=null-origin",
+  });
+  assert.equal(nullOrigin.status, 200, "Origin: null + Sec-Fetch-Site: same-origin is a same-origin post");
+  const forged = await t.fetch("/admin/inboxes", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded", origin: "null", "sec-fetch-site": "cross-site" },
+    body: "label=x",
+  });
+  assert.equal(forged.status, 403);
   assert.match(home.headers.get("content-security-policy"), /default-src 'none'/);
   assert.match(await home.text(), /Latest mail/);
 

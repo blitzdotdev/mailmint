@@ -23,7 +23,8 @@ const app = new Hono<{ Bindings: Env }>();
 app.use("*", async (c, next) => {
   await next();
   c.res.headers.set("X-Content-Type-Options", "nosniff");
-  c.res.headers.set("Referrer-Policy", "no-referrer");
+  // Default no-referrer (share-link URLs carry tokens); /admin sets same-origin itself.
+  if (!c.res.headers.has("Referrer-Policy")) c.res.headers.set("Referrer-Policy", "no-referrer");
   if (!c.res.headers.has("Cache-Control")) c.res.headers.set("Cache-Control", "no-store");
 });
 
