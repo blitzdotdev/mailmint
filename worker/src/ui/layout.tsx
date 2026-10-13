@@ -45,9 +45,18 @@ document.addEventListener("click", (e) => {
     const t = b.textContent; b.textContent = "copied"; setTimeout(() => (b.textContent = t), 1200);
   });
 });
+// Two-step confirm without a native dialog (dialogs block agent-driven browsers):
+// the first submit arms the button for 5 s, the second one goes through.
 document.addEventListener("submit", (e) => {
-  const msg = e.target.getAttribute("data-confirm");
-  if (msg && !confirm(msg)) e.preventDefault();
+  const form = e.target;
+  const msg = form.getAttribute("data-confirm");
+  if (!msg || form.dataset.armed === "1") return;
+  e.preventDefault();
+  const button = form.querySelector("button");
+  const label = button ? button.textContent : "";
+  form.dataset.armed = "1";
+  if (button) { button.textContent = "Click again to confirm"; button.title = msg; }
+  setTimeout(() => { form.dataset.armed = ""; if (button) button.textContent = label; }, 5000);
 });
 const live = document.querySelector("[data-wait]");
 if (live) {
