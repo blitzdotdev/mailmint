@@ -32,6 +32,10 @@ none of those problems.
   - **Share links**: every created inbox has a capability URL (`/i/<token>`) that reads that one inbox with no
     other credential. It serves a live web page to browsers and an `agents.md` card to agents.
   - **MCP** at `/mcp` with OAuth (you approve each client).
+  - **Any AI chat via [agent-socket](https://agentsocket.dev)**: "Connect an AI chat" on `/admin/connect` (or
+    `mailmint connect` in a terminal) prints an `agentsocket.dev/…/agents.md` link. Paste it into claude.ai,
+    ChatGPT or any chat that can make HTTP calls, and it gets create/wait/read tools with owner access while the
+    tab (or process) runs. No MCP setup needed.
 - **Owner dashboard** at `/admin` (behind Cloudflare Access): every inbox, latest mail with codes, API keys.
 - Sandboxed HTML rendering (no scripts, remote images off by default), attachments, raw `.eml` download.
 - TTLs and an hourly purge; per-inbox, per-day and size caps so a catch-all domain can't be flooded.
@@ -94,6 +98,7 @@ mailmint wait <inbox> [--code|--link] [--from X] [--subject X] [--tag T] [--sinc
 mailmint ls [inbox]
 mailmint read <id> [--text|--html|--raw]
 mailmint rm <inbox>
+mailmint connect [--relay URL]     # agent-socket link for any AI chat; runs until Ctrl-C
 ```
 
 `<inbox>` can be an address, its name part, or a share link (then no key is needed). `--json` everywhere.

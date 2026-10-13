@@ -53,6 +53,11 @@ inbox with no other credentials, so it can be pasted to another agent.
 \`${origin}/mcp\` (OAuth; the owner approves the client). Tools: create_inbox, list_inboxes, wait_for_email,
 list_messages, read_message, delete_inbox.
 
+## Any AI chat (agent-socket)
+
+The owner can mint an \`agentsocket.dev/…/agents.md\` link on \`${origin}/admin/connect\` (or with
+\`mailmint connect\`): a chat given that link gets create_inbox / wait_for_email / read_message tools without MCP.
+
 ## Lifetimes
 
 Inboxes created through the API live ${"`ttl_hours`"} (default 7 days). Addresses nobody created are auto-created on

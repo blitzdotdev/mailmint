@@ -14,6 +14,9 @@ _Avoid_: mailbox, account.
 **Share link** (`/i/mm_in_…`): capability URL for exactly one Inbox. The token in it doubles as a Bearer token for that Inbox on `/v1`. Issuing a new one revokes the old.
 _Avoid_: public link, magic link (a magic link is something the *mail* contains).
 
+**Agent link** (agent-socket): an `agentsocket.dev/v1/t/…/agents.md` URL minted by "Connect an AI chat" on `/admin/connect` or by `mailmint connect`. It gives a chat owner-level tools (create, wait, read, delete) for as long as the tab or process that minted it is running; Stop ends it.
+_Avoid_: share link (that is one inbox, served by mailmint itself).
+
 **Tag**: the `+tag` part of the recipient address, recorded on the message and usable as a wait filter.
 
 **Extraction**: codes (OTPs) and links found in a message when it is stored. `code` / `link` are the confident best picks; `codes` / `links` list all candidates.
