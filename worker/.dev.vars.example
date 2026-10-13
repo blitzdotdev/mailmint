@@ -1,0 +1,4 @@
+# Local `wrangler dev` only. Copy to .dev.vars (gitignored).
+# Skips the Cloudflare Access check on /admin and /authorize, but only for
+# requests whose host is localhost / 127.0.0.1 (see src/api/access.ts).
+DEV_BYPASS_ACCESS=1

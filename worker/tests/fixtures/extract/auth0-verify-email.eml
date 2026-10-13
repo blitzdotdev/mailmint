@@ -1,0 +1,84 @@
+From: Acme Notes <no-reply@auth0user.net>
+To: alice@aisocket.dev
+Subject: Verify your email
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <a7893eae84bc0d25c19e45f7@auth0user.net>
+MIME-Version: 1.0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+  <head>
+    <style type=3D"text/css">
+      .ExternalClass,.ExternalClass div,.ExternalClass font,.ExternalClass =
+p,.ExternalClass span,.ExternalClass td,img{line-height:100%}#outlook a{pad=
+ding:0}.ExternalClass,.ReadMsgBody{width:100%}a,blockquote,body,li,p,table,=
+td{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}table,td{mso-tab=
+le-lspace:0;mso-table-rspace:0}img{-ms-interpolation-mode:bicubic;border:0;=
+height:auto;outline:0;text-decoration:none}table{border-collapse:collapse!i=
+mportant}#bodyCell,#bodyTable,body{height:100%!important;margin:0;padding:0=
+;font-family:ProximaNova,sans-serif}#bodyCell{padding:20px}#bodyTable{width=
+:600px}@font-face{font-family:ProximaNova;src:url(https://cdn.auth0.com/fon=
+ts/proxima-nova/proximanova-regular-webfont-webfont.eot)}@media only screen=
+ and (max-width:480px){#bodyTable,body{width:100%!important}a,blockquote,bo=
+dy,li,p,table,td{-webkit-text-size-adjust:none!important}body{min-width:100=
+%!important}#bodyTable{max-width:600px!important}#signIn{max-width:280px!im=
+portant}}
+    </style>
+  </head>
+  <body>
+    <center>
+      <table style=3D"width: 600px;-webkit-text-size-adjust: 100%;-ms-text-=
+size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;margin: 0;pad=
+ding: 0;font-family: &quot;ProximaNova&quot;, sans-serif;border-collapse: c=
+ollapse !important;height: 100% !important;" align=3D"center" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" height=3D"100%" width=3D"100%" id=3D"bo=
+dyTable">
+        <tr>
+          <td align=3D"center" valign=3D"top" id=3D"bodyCell" style=3D"-web=
+kit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt=
+;mso-table-rspace: 0pt;margin: 0;padding: 20px;font-family: &quot;ProximaNo=
+va&quot;, sans-serif;height: 100% !important;">
+          <div class=3D"main">
+            <p style=3D"text-align: center;-webkit-text-size-adjust: 100%;-=
+ms-text-size-adjust: 100%; margin-bottom: 30px;">
+              <img src=3D"https://cdn.auth0.com/styleguide/2.0.9/lib/logos/=
+img/badge.png" width=3D"50" alt=3D"Your logo goes here" style=3D"-ms-interp=
+olation-mode: bicubic;border: 0;height: auto;line-height: 100%;outline: non=
+e;text-decoration: none;">
+            </p>
+
+            <h1>Welcome to Acme Notes!</h1>
+
+            <p>Thank you for signing up. Please verify your email address b=
+y clicking the following link:</p>
+
+            <p><a href=3D"https://dev-k3x9q2ab.us.auth0.com/u/email-verific=
+ation?ticket=3D6ROF6WAvmwwIlntEAvpQN6s7fDG0Afag#">Confirm my account</a></p=
+>
+
+            <p>If you are having any issues with your account, please don=
+=E2=80=99t hesitate to contact us by replying to this mail.</p>
+
+            <br>
+            Thanks!
+            <br>
+
+            <strong>Acme Notes</strong>
+
+            <br><br>
+            <hr style=3D"border: 2px solid #EAEEF3; border-bottom: 0; margi=
+n: 20px 0;">
+            <p style=3D"text-align: center;color: #A9B3BC;-webkit-text-size=
+-adjust: 100%;-ms-text-size-adjust: 100%;">
+              If you did not make this request, please contact us by replyi=
+ng to this mail.
+            </p>
+          </div>
+          </td>
+        </tr>
+      </table>
+    </center>
+  </body>
+</html>
+

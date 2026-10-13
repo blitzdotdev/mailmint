@@ -1,0 +1,94 @@
+From: PayPal <service@paypal.com>
+To: alice@aisocket.dev
+Subject: Confirm your email address
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <b16548cb52def1161c876251@paypal.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="--==_mimepart_b16548cb52de_f1161c87"
+
+----==_mimepart_b16548cb52de_f1161c87
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello, Alice Example
+
+Confirm your email.
+
+Just click the button to confirm your email address. It helps us keep your =
+account secure.
+
+Confirm Email: https://www.paypal.com/myaccount/confirm-email?token=3DUjAEj=
+GN3lMxPBhNJsD7pkRGW&cid=3DII4eLxSFan5OBY8E
+
+Help & Contact https://www.paypal.com/us/smarthelp/home | Security https://=
+www.paypal.com/us/webapps/mpp/paypal-safety-and-security | Apps https://www=
+.paypal.com/us/webapps/mpp/mobile-apps
+
+PayPal is committed to preventing fraudulent emails. Emails from PayPal wil=
+l always contain your full name. Learn to identify phishing ( https://www.p=
+aypal.com/us/security/learn-about-fake-messages )
+
+Please don't reply to this email. To get in touch with us, click Help & Con=
+tact.
+
+Copyright =C2=A9 1999-2026 PayPal, Inc. All rights reserved. PayPal is loca=
+ted at 2211 N. First St., San Jose, CA 95131.
+
+PayPal PPC001017:1.1:a1b2c3d4e5f67
+
+
+----==_mimepart_b16548cb52de_f1161c87
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html dir=3D"ltr"><head><meta charset=3D"utf-8"><meta name=
+=3D"viewport" content=3D"width=3Ddevice-width"><style>@media only screen an=
+d (max-width:480px){.mobContent{width:100%!important}}.ppsans{font-family:'=
+PayPal Sans Small','Helvetica Neue',Arial,sans-serif}</style></head>
+<body style=3D"margin:0;padding:0;background:#f7f9fa">
+<table align=3D"center" width=3D"600" class=3D"mobContent" cellpadding=3D"0=
+" cellspacing=3D"0" style=3D"width:600px;background:#ffffff">
+<tr><td style=3D"padding:30px"><img src=3D"https://www.paypalobjects.com/di=
+gitalassets/c/system-triggered-email/n/layout/images/paypal-rebranding/pp-l=
+ogo-in-circle-2x.png" width=3D"56" height=3D"56" alt=3D"PayPal"></td></tr>
+<tr><td class=3D"ppsans" style=3D"padding:0 30px;font-size:16px;color:#2c2e=
+2f">Hello, Alice Example</td></tr>
+<tr><td class=3D"ppsans" style=3D"padding:20px 30px 0;font-size:32px;line-h=
+eight:40px;font-weight:bold;color:#2c2e2f">Confirm your email.</td></tr>
+<tr><td class=3D"ppsans" style=3D"padding:20px 30px 0;font-size:16px;line-h=
+eight:24px;color:#2c2e2f">Just click the button to confirm your email addre=
+ss. It helps us keep your account secure.</td></tr>
+<tr><td style=3D"padding:30px"><a href=3D"https://www.paypal.com/myaccount/=
+confirm-email?token=3DUjAEjGN3lMxPBhNJsD7pkRGW&amp;cid=3DII4eLxSFan5OBY8E" =
+style=3D"background:#003087;border-radius:25px;color:#ffffff;display:inline=
+-block;font-weight:bold;font-size:16px;padding:12px 40px;text-decoration:no=
+ne">Confirm Email</a></td></tr>
+<tr><td class=3D"ppsans" style=3D"padding:30px;background:#f7f9fa;font-size=
+:13px;line-height:20px;color:#687173">
+<a href=3D"https://www.paypal.com/us/smarthelp/home" style=3D"color:#0070e0=
+">Help &amp; Contact</a> | <a href=3D"https://www.paypal.com/us/webapps/mpp=
+/paypal-safety-and-security" style=3D"color:#0070e0">Security</a> | <a href=
+=3D"https://www.paypal.com/us/webapps/mpp/mobile-apps" style=3D"color:#0070=
+e0">Apps</a><br><br>
+<a href=3D"https://twitter.com/paypal"><img src=3D"https://www.paypalobject=
+s.com/x.png" alt=3D"X" width=3D"24"></a> <a href=3D"https://www.instagram.c=
+om/paypal"><img src=3D"https://www.paypalobjects.com/ig.png" alt=3D"Instagr=
+am" width=3D"24"></a> <a href=3D"https://www.facebook.com/PayPalUSA"><img s=
+rc=3D"https://www.paypalobjects.com/fb.png" alt=3D"Facebook" width=3D"24"><=
+/a> <a href=3D"https://www.linkedin.com/company/paypal"><img src=3D"https:/=
+/www.paypalobjects.com/li.png" alt=3D"LinkedIn" width=3D"24"></a><br><br>
+PayPal is committed to preventing fraudulent emails. Emails from PayPal wil=
+l always contain your full name. <a href=3D"https://www.paypal.com/us/secur=
+ity/learn-about-fake-messages" style=3D"color:#0070e0">Learn to identify ph=
+ishing</a><br><br>
+Please don't reply to this email. To get in touch with us, click <a href=3D=
+"https://www.paypal.com/us/smarthelp/home" style=3D"color:#0070e0">Help &am=
+p; Contact</a>.<br><br>
+Copyright =C2=A9 1999-2026 PayPal, Inc. All rights reserved. PayPal is loca=
+ted at 2211 N. First St., San Jose, CA 95131.<br><br>
+<span style=3D"font-size:10px">PayPal PPC001017:1.1:a1b2c3d4e5f67</span></t=
+d></tr>
+</table></body></html>
+
+
+----==_mimepart_b16548cb52de_f1161c87--

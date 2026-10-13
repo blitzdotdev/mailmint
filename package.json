@@ -1,0 +1,23 @@
+{
+  "name": "burnermail-monorepo",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "workspaces": [
+    "worker",
+    "cli"
+  ],
+  "scripts": {
+    "check": "npm run check -w worker",
+    "test": "npm test -w worker && npm test -w cli",
+    "harness": "node harness/run.mjs",
+    "deploy": "bash scripts/deploy.sh deploy"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "workerd@1.20261006.1": true
+  }
+}

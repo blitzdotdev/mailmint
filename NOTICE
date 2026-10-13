@@ -1,0 +1,9 @@
+burnermail
+Copyright 2026 the burnermail authors. Licensed under the Apache License, Version 2.0.
+
+This product includes code adapted from cf-mailroom (https://github.com/wong2/cf-mailroom),
+licensed under the Apache License, Version 2.0:
+  - worker/src/api/access.ts (Cloudflare Access JWT verification)
+  - worker/src/mcp/* (OAuth provider wiring, consent flow, MCP route guards)
+
+Code/link extraction rules draw on MIT-licensed projects; see worker/src/extract/ATTRIBUTION.md.

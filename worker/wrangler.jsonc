@@ -1,0 +1,63 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  // The hosted instance (mail.aisocket.dev, mail on *@aisocket.dev).
+  // Self-hosting: change `addresses`, `routes`, MAIL_DOMAINS, the WEB_ACCESS_*
+  // values and the resource IDs; see docs/self-host.md.
+  "name": "burnermail",
+  "main": "src/index.tsx",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "mail.aisocket.dev", "custom_domain": true }],
+  // Catch-all: every *@aisocket.dev message goes to this Worker's email() handler.
+  // Apex domains only (Email Routing cannot catch-all a subdomain). Top-level only;
+  // `wrangler deploy` reconciles the rule.
+  "addresses": ["*@aisocket.dev"],
+  "observability": { "enabled": true },
+  "keep_vars": false,
+  "vars": {
+    // Comma-separated mail domains this instance accepts; the first one is the default for new inboxes.
+    "MAIL_DOMAINS": "aisocket.dev",
+    // "1": mail to any address auto-creates an inbox (readable by the owner only).
+    // "0": only addresses created through the API/CLI/MCP receive mail; everything else is rejected.
+    "ACCEPT_UNKNOWN": "1",
+    // Lifetimes in hours. Auto-created inboxes get AUTO_TTL_HOURS from their latest message.
+    "DEFAULT_TTL_HOURS": "168",
+    "AUTO_TTL_HOURS": "24",
+    "MAX_TTL_HOURS": "720",
+    // Abuse caps. Mail over a cap is rejected at SMTP time (the sender gets a bounce).
+    "MAX_AUTO_INBOXES_PER_DAY": "200",
+    "MAX_MESSAGES_PER_INBOX_PER_DAY": "300",
+    "MAX_MESSAGES_PER_DAY": "5000",
+    "MAX_MESSAGE_BYTES": "10485760",
+    // Cloudflare Access application protecting /admin and /authorize (not secrets).
+    "WEB_ACCESS_TEAM_DOMAIN": "https://blitz-dev-box.cloudflareaccess.com",
+    "WEB_ACCESS_AUD": "38ade2ba88bc764081f039092dc54f5ec56a55634142ba56e2dcd2fd909c2e67"
+  },
+  "d1_databases": [
+    // Inboxes, messages (with extracted codes/links), API keys, daily counters, OAuth consent transactions.
+    { "binding": "DB", "database_name": "burnermail", "database_id": "2bedeaa4-6d21-4862-815f-3e6556c3d592", "migrations_dir": "migrations" }
+  ],
+  "r2_buckets": [
+    // Raw .eml and attachments, keyed raw/<inboxId>/… and att/<inboxId>/… so purge can delete by prefix.
+    { "binding": "RAW", "bucket_name": "burnermail-raw" }
+  ],
+  "kv_namespaces": [
+    // OAuth clients, grants and tokens for the MCP server (@cloudflare/workers-oauth-provider).
+    { "binding": "OAUTH_KV", "id": "abc4311f563a4461b15f673e31f58668" }
+  ],
+  "durable_objects": {
+    // One per address. Only wakes long-polling waiters when mail lands; D1 holds the data.
+    "bindings": [{ "name": "SIGNAL", "class_name": "InboxSignal" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["InboxSignal"] }],
+  "ratelimits": [
+    // Failed-auth limiter, keyed by client IP, so tokens and API keys can't be brute-forced.
+    { "name": "AUTH_RL", "namespace_id": "8301", "simple": { "limit": 30, "period": 60 } }
+  ],
+  "triggers": {
+    // Hourly purge of expired inboxes (D1 rows, R2 objects, signal state).
+    "crons": ["17 * * * *"]
+  }
+}

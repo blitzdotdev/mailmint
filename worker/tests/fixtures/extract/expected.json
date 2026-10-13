@@ -1,0 +1,209 @@
+{
+  "amazon-otp.eml": {
+    "code": "158392",
+    "link": null
+  },
+  "anthropic-login-link.eml": {
+    "code": null,
+    "link": "https://claude.ai/magic-link#f20bda6ecc7019c47a12cf7b9b3b32419b32cb23721f3eb972df8cf557c936d7:YWxpY2VAYWlzb2NrZXQuZGV2",
+    "linkKind": "magic"
+  },
+  "apple-id-verify-email.eml": {
+    "code": "925138",
+    "link": null
+  },
+  "auth0-verify-email.eml": {
+    "code": null,
+    "link": "https://dev-k3x9q2ab.us.auth0.com/u/email-verification?ticket=6ROF6WAvmwwIlntEAvpQN6s7fDG0Afag#",
+    "linkKind": "verify"
+  },
+  "clerk-otp.eml": {
+    "code": "517043",
+    "link": null
+  },
+  "cloudflare-verify-email.eml": {
+    "code": null,
+    "link": "https://dash.cloudflare.com/email-verification?token=bPOFJaihvaFd74pxBQTJwcKyXJblNbNsHvwuCmPjkXVUCGM6SR3TwN8AJh82JTCw",
+    "linkKind": "verify"
+  },
+  "de-bestaetigungscode.eml": {
+    "code": "246813",
+    "link": null
+  },
+  "discord-verify-email.eml": {
+    "code": null,
+    "link": "https://click.discord.com/ls/click?upn=u001.f09tKmWkh29onwE0iynPTtDCy8mySD5bnhpDOpqTSlVGQgf13okpvm04FbR2oZCbcCYhyMSaDFzLtxfAifluJXjg1v6yPi95zhNSRs7Iu2v4nW9QbwBDefn8RuOiFmHSZaTBENeAzBVhWIzsqyGlRkawwm4wDhoARMAgzu2763AZUBD4sT2W",
+    "linkKind": "verify"
+  },
+  "dockerhub-verify-email.eml": {
+    "code": null,
+    "link": "https://login.docker.com/u/email-verification?ticket=9ciHan0GvXvSGfeE24CSAnOD9EbdSncS#",
+    "linkKind": "verify"
+  },
+  "es-codigo-verificacion.eml": {
+    "code": "731590",
+    "link": null
+  },
+  "figma-verify-email.eml": {
+    "code": null,
+    "link": "https://www.figma.com/verify?fuid=1234567890123456789&token=d7Wb20jJcCrgmyCcj84FsKfCekApdOXgZJLmi636",
+    "linkKind": "verify"
+  },
+  "firebase-verify-email.eml": {
+    "code": null,
+    "link": "https://burner-demo-4f2a1.firebaseapp.com/__/auth/action?mode=verifyEmail&oobCode=9PIuijmjm4TB0Fy8Gn9HFVc9c3W76C6tOUdO5OetcSkSUibW&apiKey=AIzaSytmcRMHWKicHUORhJvMmZMMtk13AnvGwl9&lang=en",
+    "linkKind": "verify"
+  },
+  "github-device-verification.eml": {
+    "code": "739214",
+    "link": null
+  },
+  "github-launch-code.eml": {
+    "code": "51870342",
+    "link": "https://github.com/account_verifications/confirm/qLVUI3V66bWtV63FEaVCUCyFvLQQUUXqKHHrtlju?via_launch_code_email=true",
+    "linkKind": "verify"
+  },
+  "github-password-reset.eml": {
+    "code": null,
+    "link": "https://github.com/password_reset/aV1yO4VcrllGtDs6YA8JFm7yFoZMy5QIXGDN",
+    "linkKind": "reset"
+  },
+  "github-verify-email.eml": {
+    "code": null,
+    "link": "https://github.com/users/alice-bm/emails/180023451/confirm_verification/6df70f6ee56891efe2cc688f05e13dc8fb051cc8?via_launch=true",
+    "linkKind": "verify"
+  },
+  "google-recovery-email-code.eml": {
+    "code": "604187",
+    "link": null
+  },
+  "google-voice-sms-forward.eml": {
+    "code": "482913",
+    "link": null
+  },
+  "instagram-code.eml": {
+    "code": "306418",
+    "link": null
+  },
+  "ja-auth-code.eml": {
+    "code": "813574",
+    "link": null
+  },
+  "ko-auth-number.eml": {
+    "code": "482913",
+    "link": null
+  },
+  "linear-magic-link.eml": {
+    "code": "kq381-7bz2m",
+    "link": "https://linear.app/auth/email/verify?token=Cfo62dDD8CWB5Vi1Dzx3ncNJdD8FjNjTA7372DlfKfGE8Lhc&email=alice%40aisocket.dev",
+    "linkKind": "magic"
+  },
+  "linkedin-pin.eml": {
+    "code": "671254",
+    "link": null
+  },
+  "microsoft-security-code.eml": {
+    "code": "4718260",
+    "link": null
+  },
+  "negative-2fa-enabled.eml": {
+    "code": null,
+    "link": null
+  },
+  "negative-newsletter.eml": {
+    "code": null,
+    "link": null
+  },
+  "negative-order-confirmation.eml": {
+    "code": null,
+    "link": null
+  },
+  "negative-shipping-notification.eml": {
+    "code": null,
+    "link": null
+  },
+  "negative-welcome-marketing.eml": {
+    "code": null,
+    "link": null
+  },
+  "netlify-identity-confirm.eml": {
+    "code": null,
+    "link": "https://burner-demo.netlify.app/#confirmation_token=jKPY57bB25j8t1GikWKzyf",
+    "linkKind": "verify"
+  },
+  "notion-login-code.eml": {
+    "code": "846210",
+    "link": "https://www.notion.so/loginwithemail?state=oPNwAMEBNhAQ3awOlGq47CUVnMrvKNm6tOPZ&token=9LEZKeCdOpm91wiXDXJYAjNCSf5uQGvImbZ0ZWcFclGaClJb",
+    "linkKind": "magic"
+  },
+  "npm-otp.eml": {
+    "code": "63850291",
+    "link": null
+  },
+  "openai-verify-email.eml": {
+    "code": null,
+    "link": "https://auth.openai.com/u/email-verification?ticket=O8HGSJ0i22Ewf3MiX9usB30mihCqisBY#",
+    "linkKind": "verify"
+  },
+  "outlook-safelinks-forward.eml": {
+    "code": null,
+    "link": "https://app.acmecrm.example/verify-email?token=JMEt7aE8ZEenH9gGK2Me1e6U0X0WcgeLmVsiuzxz&uid=58213",
+    "linkKind": "verify"
+  },
+  "paypal-confirm-email.eml": {
+    "code": null,
+    "link": "https://www.paypal.com/myaccount/confirm-email?token=UjAEjGN3lMxPBhNJsD7pkRGW&cid=II4eLxSFan5OBY8E",
+    "linkKind": "verify"
+  },
+  "ru-confirmation-code.eml": {
+    "code": "370418",
+    "link": null
+  },
+  "shopify-login-code.eml": {
+    "code": "427016",
+    "link": null
+  },
+  "slack-confirmation-code.eml": {
+    "code": "KQZ-DMT",
+    "link": null
+  },
+  "stripe-verify-email.eml": {
+    "code": null,
+    "link": "https://dashboard.stripe.com/confirm_email?t=y7d7SeqqeHQg0Acn45wBRHf6hLjC7CKq",
+    "linkKind": "verify"
+  },
+  "supabase-confirm-signup.eml": {
+    "code": null,
+    "link": "https://xyzqwertyuiopasdfghj.supabase.co/auth/v1/verify?token=82679370abe46044337258bab6c5a0d38232d248068fcdfaddf2925d&type=signup&redirect_to=https://app.example.com/welcome",
+    "linkKind": "verify"
+  },
+  "supabase-magic-link.eml": {
+    "code": null,
+    "link": "https://xyzqwertyuiopasdfghj.supabase.co/auth/v1/verify?token=pkce_960660805317c254b11a948a04f88ae58975f2e28b7b701f6d5d04db&type=magiclink&redirect_to=http://localhost:3000",
+    "linkKind": "magic"
+  },
+  "supabase-otp.eml": {
+    "code": "284715",
+    "link": null
+  },
+  "vercel-login-code.eml": {
+    "code": "381906",
+    "link": null
+  },
+  "vercel-magic-link.eml": {
+    "code": null,
+    "link": "https://vercel.com/confirm?email=alice%40aisocket.dev&token=gTrgCWcUTe1lbTntyam0YJ5O&mode=login"
+  },
+  "x-login-confirmation.eml": {
+    "code": "7kq2vx9m",
+    "link": null
+  },
+  "x-verification-code.eml": {
+    "code": "902375",
+    "link": null
+  },
+  "zh-email-verification-code.eml": {
+    "code": "590362",
+    "link": null
+  }
+}

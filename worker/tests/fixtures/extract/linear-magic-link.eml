@@ -1,0 +1,64 @@
+From: Linear <notifications@linear.app>
+To: alice@aisocket.dev
+Subject: Log in to Linear
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <18ab8bb7cdfa9bea1b82a923@linear.app>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="--==_mimepart_18ab8bb7cdfa_9bea1b82"
+
+----==_mimepart_18ab8bb7cdfa_9bea1b82
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Log in to Linear
+
+Click the link below to log in to Linear. This link and code will only be valid for the next 10 minutes.
+
+https://linear.app/auth/email/verify?token=Cfo62dDD8CWB5Vi1Dzx3ncNJdD8FjNjTA7372DlfKfGE8Lhc&email=alice%40aisocket.dev
+
+If the link does not work, you can use the login verification code directly:
+
+kq381-7bz2m
+
+If you didn't request this email, you can safely ignore it.
+
+Linear Orbit, Inc. · 548 Market St #69437 · San Francisco, CA 94104
+
+
+----==_mimepart_18ab8bb7cdfa_9bea1b82
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><meta charset=3D"utf-8"><meta name=3D"color-sche=
+me" content=3D"light dark"></head>
+<body style=3D"background-color:#ffffff;margin:0">
+<div style=3D"display:none;max-height:0;overflow:hidden">Your login link fo=
+r Linear</div>
+<table align=3D"center" width=3D"100%" role=3D"presentation" cellspacing=3D=
+"0" cellpadding=3D"0" border=3D"0" style=3D"max-width:560px;margin:0 auto;p=
+adding:20px 0 48px">
+<tr><td><img src=3D"https://static.linear.app/email/linear-logo.png" width=
+=3D"42" height=3D"42" alt=3D"Linear" style=3D"border-radius:21px"></td></tr=
+>
+<tr><td><h1 style=3D"font-family:-apple-system,BlinkMacSystemFont,'Segoe UI=
+',Roboto,Oxygen-Sans,Ubuntu,Cantarell,'Helvetica Neue',sans-serif;font-size=
+:24px;letter-spacing:-0.5px;line-height:1.3;font-weight:400;color:#484848;p=
+adding:17px 0 0">Your login link for Linear</h1></td></tr>
+<tr><td style=3D"padding:27px 0 27px"><a href=3D"https://linear.app/auth/em=
+ail/verify?token=3DCfo62dDD8CWB5Vi1Dzx3ncNJdD8FjNjTA7372DlfKfGE8Lhc&amp;ema=
+il=3Dalice%40aisocket.dev" style=3D"background-color:#5e6ad2;border-radius:=
+3px;font-weight:600;color:#fff;font-size:15px;text-decoration:none;text-ali=
+gn:center;display:block;padding:11px 23px">Login to Linear</a></td></tr>
+<tr><td><p style=3D"margin:0 0 15px;font-size:15px;line-height:1.4;color:#3=
+c4149">This link and code will only be valid for the next 10 minutes. If th=
+e link does not work, you can use the login verification code directly:</p>
+<code style=3D"font-family:monospace;font-weight:700;padding:1px 4px;backgr=
+ound-color:#dfe1e4;letter-spacing:-0.3px;font-size:21px;border-radius:4px;c=
+olor:#3c4149">kq381-7bz2m</code></td></tr>
+<tr><td><hr style=3D"border-color:#dfe1e4;margin:42px 0 26px"><a href=3D"ht=
+tps://linear.app" style=3D"font-size:14px;color:#b4becc">Linear</a></td></t=
+r>
+</table></body></html>
+
+
+----==_mimepart_18ab8bb7cdfa_9bea1b82--

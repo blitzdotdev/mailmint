@@ -1,0 +1,87 @@
+From: Stripe <notifications@stripe.com>
+To: alice@aisocket.dev
+Subject: Confirm your email address for Stripe
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <25f15ac7f812bad9caba64e4@stripe.com>
+List-Unsubscribe:
+ <https://dashboard.stripe.com/settings/communication-preferences>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="--==_mimepart_25f15ac7f812_bad9caba"
+
+----==_mimepart_25f15ac7f812_bad9caba
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Stripe
+
+Confirm your email address
+
+Please confirm your email address to finish setting up your Stripe account.=
+ Click the button below to confirm alice@aisocket.dev.
+
+Confirm email address: https://dashboard.stripe.com/confirm_email?t=3Dy7d7S=
+eqqeHQg0Acn45wBRHf6hLjC7CKq
+
+Once you've confirmed your email you can activate payments, invite your tea=
+m, and explore the Dashboard.
+
+If you didn't create a Stripe account, you can safely ignore this email.
+
+----
+
+Questions? Visit https://support.stripe.com
+
+Stripe, 354 Oyster Point Blvd, South San Francisco, CA 94080
+
+
+----==_mimepart_25f15ac7f812_bad9caba
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><meta charset=3D"utf-8"><meta name=3D"viewport" =
+content=3D"width=3Ddevice-width"><style>
+.st-Body{background-color:#f6f9fc} .st-Copy{color:#525f7f;font-family:-appl=
+e-system,'SF Pro Display','SF Pro Text','Helvetica',sans-serif;font-size:16=
+px;line-height:24px}
+@media only screen and (max-width:600px){.st-Width{width:100%!important}}
+</style></head>
+<body class=3D"st-Body" style=3D"background-color:#f6f9fc;margin:0">
+<table class=3D"st-Wrapper" align=3D"center" width=3D"600" style=3D"width:6=
+00px;background-color:#ffffff;border-radius:16px;margin:32px auto" cellpadd=
+ing=3D"0" cellspacing=3D"0" border=3D"0">
+<tr><td style=3D"padding:40px 48px 0"><img alt=3D"Stripe" height=3D"26" wid=
+th=3D"62" src=3D"https://stripe-images.s3.amazonaws.com/notifications/hoste=
+d/20180110/Header/Left.png"></td></tr>
+<tr><td class=3D"st-Copy" style=3D"padding:32px 48px 0;color:#32325d;font-s=
+ize:24px;line-height:32px;font-weight:600">Confirm your email address</td><=
+/tr>
+<tr><td class=3D"st-Copy" style=3D"padding:16px 48px 0;color:#525f7f">Pleas=
+e confirm your email address to finish setting up your Stripe account. Clic=
+k the button below to confirm <strong>alice@aisocket.dev</strong>.</td></tr=
+>
+<tr><td style=3D"padding:24px 48px"><table cellpadding=3D"0" cellspacing=3D=
+"0" border=3D"0"><tr><td align=3D"center" style=3D"background-color:#635bff=
+;border-radius:5px"><a href=3D"https://dashboard.stripe.com/confirm_email?t=
+=3Dy7d7SeqqeHQg0Acn45wBRHf6hLjC7CKq" style=3D"display:block;padding:10px 20=
+px;color:#ffffff;font-weight:bold;text-decoration:none;font-size:16px">Conf=
+irm email address</a></td></tr></table></td></tr>
+<tr><td class=3D"st-Copy" style=3D"padding:0 48px">Once you've confirmed yo=
+ur email you can activate payments, invite your team, and explore the <a hr=
+ef=3D"https://dashboard.stripe.com/dashboard" style=3D"color:#635bff">Dashb=
+oard</a>.</td></tr>
+<tr><td class=3D"st-Copy" style=3D"padding:16px 48px 40px;color:#8898aa;fon=
+t-size:14px">If you didn't create a Stripe account, you can safely ignore t=
+his email.</td></tr>
+</table>
+<table align=3D"center" width=3D"600" cellpadding=3D"0" cellspacing=3D"0"><=
+tr><td style=3D"color:#8898aa;font-size:12px;line-height:16px;font-family:-=
+apple-system,Helvetica,sans-serif;padding:0 48px 32px">Questions? Visit <a =
+href=3D"https://support.stripe.com/" style=3D"color:#635bff">support.stripe=
+.com</a><br><br>Stripe, 354 Oyster Point Blvd, South San Francisco, CA 9408=
+0<br><a href=3D"https://dashboard.stripe.com/settings/communication-prefere=
+nces" style=3D"color:#8898aa">Manage email preferences</a></td></tr></table=
+>
+</body></html>
+
+
+----==_mimepart_25f15ac7f812_bad9caba--

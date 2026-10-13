@@ -1,0 +1,14 @@
+From: Supabase Auth <noreply@mail.app.supabase.io>
+To: alice@aisocket.dev
+Subject: Your Magic Link
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <ee6c23c56ad5d13eb9f15ca9@mail.app.supabase.io>
+MIME-Version: 1.0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<h2>Magic Link</h2>
+
+<p>Follow this link to login:</p>
+<p><a href="https://xyzqwertyuiopasdfghj.supabase.co/auth/v1/verify?token=pkce_960660805317c254b11a948a04f88ae58975f2e28b7b701f6d5d04db&amp;type=magiclink&amp;redirect_to=http://localhost:3000">Log In</a></p>
+

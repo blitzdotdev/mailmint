@@ -1,0 +1,80 @@
+From: Cloudflare <noreply@notify.cloudflare.com>
+To: alice@aisocket.dev
+Subject: [Cloudflare]: Please verify your email address
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <a20c9d6300420110ab2c93c3@notify.cloudflare.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="--==_mimepart_a20c9d630042_0110ab2c"
+
+----==_mimepart_a20c9d630042_0110ab2c
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Hi there,
+
+Thanks for signing up for Cloudflare! Please verify your email address by c=
+licking the link below:
+
+https://dash.cloudflare.com/email-verification?token=3DbPOFJaihvaFd74pxBQTJ=
+wcKyXJblNbNsHvwuCmPjkXVUCGM6SR3TwN8AJh82JTCw
+
+This link will expire in 24 hours. If you did not sign up for a Cloudflare =
+account, you can ignore this email.
+
+Thank you,
+The Cloudflare Team
+
+--
+Cloudflare, Inc. | 101 Townsend St. | San Francisco, CA 94107
+Privacy Policy: https://www.cloudflare.com/privacypolicy/
+
+
+----==_mimepart_a20c9d630042_0110ab2c
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html lang=3D"en"><head><meta charset=3D"UTF-8"><meta name=
+=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1.0"><title>=
+Verify your email address</title>
+<style type=3D"text/css">
+body{margin:0;padding:0;background:#f2f2f2}
+.cf-btn:hover{background:#d65f0f!important}
+@media screen and (max-width:640px){.cf-main{width:100%!important}}
+</style></head>
+<body style=3D"background:#f2f2f2;font-family:-apple-system,BlinkMacSystemF=
+ont,'Segoe UI',Roboto,Arial,sans-serif;color:#313131">
+<table class=3D"cf-main" align=3D"center" width=3D"640" cellpadding=3D"0" c=
+ellspacing=3D"0" border=3D"0" style=3D"width:640px;background:#ffffff">
+<tr><td style=3D"padding:32px 40px;border-bottom:4px solid #f6821f"><img sr=
+c=3D"https://www.cloudflare.com/img/logo-cloudflare-dark.png" width=3D"150"=
+ height=3D"50" alt=3D"Cloudflare"></td></tr>
+<tr><td style=3D"padding:32px 40px 8px;font-size:15px;line-height:24px">Hi =
+there,</td></tr>
+<tr><td style=3D"padding:8px 40px;font-size:15px;line-height:24px">Thanks f=
+or signing up for Cloudflare! Please verify your email address by clicking =
+the link below:</td></tr>
+<tr><td style=3D"padding:24px 40px" align=3D"left"><a class=3D"cf-btn" href=
+=3D"https://dash.cloudflare.com/email-verification?token=3DbPOFJaihvaFd74px=
+BQTJwcKyXJblNbNsHvwuCmPjkXVUCGM6SR3TwN8AJh82JTCw" style=3D"background:#f682=
+1f;color:#ffffff;font-weight:600;padding:12px 24px;border-radius:4px;text-d=
+ecoration:none;display:inline-block">Verify email address</a></td></tr>
+<tr><td style=3D"padding:8px 40px;font-size:13px;line-height:20px;color:#6d=
+6d6d">Or copy this link into your browser: <a href=3D"https://dash.cloudfla=
+re.com/email-verification?token=3DbPOFJaihvaFd74pxBQTJwcKyXJblNbNsHvwuCmPjk=
+XVUCGM6SR3TwN8AJh82JTCw" style=3D"color:#2c7cb0;word-break:break-all">https=
+://dash.cloudflare.com/email-verification?token=3DbPOFJaihvaFd74pxBQTJwcKyX=
+JblNbNsHvwuCmPjkXVUCGM6SR3TwN8AJh82JTCw</a></td></tr>
+<tr><td style=3D"padding:8px 40px 32px;font-size:15px;line-height:24px">Thi=
+s link will expire in 24 hours. If you did not sign up for a Cloudflare acc=
+ount, you can ignore this email.<br><br>Thank you,<br>The Cloudflare Team</=
+td></tr>
+<tr><td style=3D"padding:24px 40px;background:#f2f2f2;font-size:12px;color:=
+#6d6d6d;text-align:center">Cloudflare, Inc. | 101 Townsend St. | San Franci=
+sco, CA 94107<br><a href=3D"https://www.cloudflare.com/privacypolicy/" styl=
+e=3D"color:#6d6d6d">Privacy Policy</a> | <a href=3D"https://www.cloudflare.=
+com/website-terms/" style=3D"color:#6d6d6d">Terms</a> | <a href=3D"https://=
+twitter.com/cloudflare" style=3D"color:#6d6d6d">Twitter</a></td></tr>
+</table></body></html>
+
+
+----==_mimepart_a20c9d630042_0110ab2c--

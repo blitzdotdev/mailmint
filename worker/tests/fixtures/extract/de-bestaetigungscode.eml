@@ -1,0 +1,71 @@
+From: Bergblick Reisen <noreply@bergblick-reisen.example.de>
+To: alice@aisocket.dev
+Subject: =?UTF-8?B?SWhyIEJlc3TDpHRpZ3VuZ3Njb2RlIGbDvHIgQmVyZ2JsaWNrIFJlaXNl?=
+ =?UTF-8?B?bg==?=
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <fc310e78c6215af280780fed@bergblick-reisen.example.de>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="--==_mimepart_fc310e78c621_5af28078"
+
+----==_mimepart_fc310e78c621_5af28078
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Hallo Alice,
+
+vielen Dank f=C3=BCr Ihre Registrierung bei Bergblick Reisen. Bitte best=C3=
+=A4tigen Sie Ihre E-Mail-Adresse.
+
+Ihr Best=C3=A4tigungscode lautet:
+
+246813
+
+Der Code ist 15 Minuten g=C3=BCltig. Falls Sie sich nicht registriert haben=
+, k=C3=B6nnen Sie diese E-Mail ignorieren.
+
+Mit freundlichen Gr=C3=BC=C3=9Fen
+Ihr Bergblick-Team
+
+--
+Bergblick Reisen GmbH =C2=B7 Musterstra=C3=9Fe 12 =C2=B7 10115 Berlin
+Tel.: +49 30 12345678 =C2=B7 E-Mail: service@bergblick-reisen.example.de
+Amtsgericht Charlottenburg HRB 123456 B =C2=B7 USt-IdNr. DE123456789
+Gesch=C3=A4ftsf=C3=BChrer: Max Mustermann
+Datenschutz: https://bergblick-reisen.example.de/datenschutz
+
+
+----==_mimepart_fc310e78c621_5af28078
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html lang=3D"de"><head><meta charset=3D"utf-8"><title>Best=
+=C3=A4tigungscode</title></head>
+<body style=3D"margin:0;background:#eef2f5;font-family:Arial,Helvetica,sans=
+-serif;color:#1c2b39">
+<table width=3D"600" align=3D"center" cellpadding=3D"0" cellspacing=3D"0" s=
+tyle=3D"background:#ffffff">
+<tr><td style=3D"padding:24px 32px;background:#1c2b39;color:#ffffff;font-si=
+ze:20px;font-weight:bold">Bergblick Reisen</td></tr>
+<tr><td style=3D"padding:32px;font-size:15px;line-height:22px">Hallo Alice,=
+<br><br>vielen Dank f=C3=BCr Ihre Registrierung bei Bergblick Reisen. Bitte=
+ best=C3=A4tigen Sie Ihre E-Mail-Adresse.<br><br>Ihr Best=C3=A4tigungscode =
+lautet:</td></tr>
+<tr><td align=3D"center" style=3D"padding:0 32px 24px"><div style=3D"font-s=
+ize:30px;font-weight:bold;letter-spacing:6px;background:#eef2f5;padding:16p=
+x;border-radius:4px">246813</div></td></tr>
+<tr><td style=3D"padding:0 32px 32px;font-size:15px;line-height:22px">Der C=
+ode ist 15 Minuten g=C3=BCltig. Falls Sie sich nicht registriert haben, k=
+=C3=B6nnen Sie diese E-Mail ignorieren.<br><br>Mit freundlichen Gr=C3=BC=C3=
+=9Fen<br>Ihr Bergblick-Team</td></tr>
+<tr><td style=3D"padding:24px 32px;background:#f7f7f7;font-size:11px;line-h=
+eight:16px;color:#6b7785">Bergblick Reisen GmbH =C2=B7 Musterstra=C3=9Fe 12=
+ =C2=B7 10115 Berlin<br>Tel.: +49 30 12345678 =C2=B7 E-Mail: service@bergbl=
+ick-reisen.example.de<br>Amtsgericht Charlottenburg HRB 123456 B =C2=B7 USt=
+-IdNr. DE123456789<br>Gesch=C3=A4ftsf=C3=BChrer: Max Mustermann<br><a href=
+=3D"https://bergblick-reisen.example.de/datenschutz" style=3D"color:#6b7785=
+">Datenschutz</a> =C2=B7 <a href=3D"https://bergblick-reisen.example.de/imp=
+ressum" style=3D"color:#6b7785">Impressum</a></td></tr>
+</table></body></html>
+
+
+----==_mimepart_fc310e78c621_5af28078--

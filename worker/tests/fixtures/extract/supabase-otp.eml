@@ -1,0 +1,13 @@
+From: Supabase Auth <noreply@mail.app.supabase.io>
+To: alice@aisocket.dev
+Subject: Your login code
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <3b8d1b587c0eff7c1bea2609@mail.app.supabase.io>
+MIME-Version: 1.0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<h2>One time login code</h2>
+
+<p>Please enter this code: 284715</p>
+

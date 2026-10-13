@@ -1,0 +1,14 @@
+From: Supabase Auth <noreply@mail.app.supabase.io>
+To: alice@aisocket.dev
+Subject: Confirm Your Signup
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <781605cf38a5e49b0452e24e@mail.app.supabase.io>
+MIME-Version: 1.0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<h2>Confirm your signup</h2>
+
+<p>Follow this link to confirm your user:</p>
+<p><a href="https://xyzqwertyuiopasdfghj.supabase.co/auth/v1/verify?token=82679370abe46044337258bab6c5a0d38232d248068fcdfaddf2925d&amp;type=signup&amp;redirect_to=https://app.example.com/welcome">Confirm your mail</a></p>
+

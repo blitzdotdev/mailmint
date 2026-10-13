@@ -1,0 +1,44 @@
+From: noreply@burner-demo-4f2a1.firebaseapp.com
+To: alice@aisocket.dev
+Subject: Verify your email for burner-demo
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <f99da7e93de86fc3c8ce9d60@burner-demo-4f2a1.firebaseapp.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="--==_mimepart_f99da7e93de8_6fc3c8ce"
+
+----==_mimepart_f99da7e93de8_6fc3c8ce
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hello,
+
+Follow this link to verify your email address.
+
+https://burner-demo-4f2a1.firebaseapp.com/__/auth/action?mode=verifyEmail&oobCode=9PIuijmjm4TB0Fy8Gn9HFVc9c3W76C6tOUdO5OetcSkSUibW&apiKey=AIzaSytmcRMHWKicHUORhJvMmZMMtk13AnvGwl9&lang=en
+
+If you didn’t ask to verify this address, you can ignore this email.
+
+Thanks,
+
+Your burner-demo team
+
+
+----==_mimepart_f99da7e93de8_6fc3c8ce
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>Hello,</p>
+<p>Follow this link to verify your email address.</p>
+<p><a href=3D'https://burner-demo-4f2a1.firebaseapp.com/__/auth/action?mode=
+=3DverifyEmail&amp;oobCode=3D9PIuijmjm4TB0Fy8Gn9HFVc9c3W76C6tOUdO5OetcSkSUi=
+bW&amp;apiKey=3DAIzaSytmcRMHWKicHUORhJvMmZMMtk13AnvGwl9&amp;lang=3Den'>http=
+s://burner-demo-4f2a1.firebaseapp.com/__/auth/action?mode=3DverifyEmail&amp=
+;oobCode=3D9PIuijmjm4TB0Fy8Gn9HFVc9c3W76C6tOUdO5OetcSkSUibW&amp;apiKey=3DAI=
+zaSytmcRMHWKicHUORhJvMmZMMtk13AnvGwl9&amp;lang=3Den</a></p>
+<p>If you didn=E2=80=99t ask to verify this address, you can ignore this em=
+ail.</p>
+<p>Thanks,</p>
+<p>Your burner-demo team</p>
+
+
+----==_mimepart_f99da7e93de8_6fc3c8ce--

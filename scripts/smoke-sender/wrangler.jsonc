@@ -1,0 +1,17 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  // Test-only sender for scripts/smoke-real-mail.sh: delivers real email through Cloudflare
+  // Email Sending so the production catch-all → Worker path is exercised end to end.
+  // Locked down: needs SMOKE_SECRET and only sends to ALLOWED_DOMAIN.
+  "name": "burnermail-smoke-sender",
+  "main": "worker.ts",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "vars": {
+    "FROM": "burnermail-smoke@agentsocket.dev",
+    "ALLOWED_DOMAIN": "aisocket.dev"
+  },
+  // agentsocket.dev is onboarded to Email Sending on this account.
+  "send_email": [{ "name": "EMAIL" }]
+}

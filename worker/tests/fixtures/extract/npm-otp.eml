@@ -1,0 +1,25 @@
+From: npm <support@npmjs.com>
+To: alice@aisocket.dev
+Subject: [npm] OTP for logging in to your account
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <9eaf57494d2e356c787a120d@npmjs.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hi, alicebm!
+
+Someone (hopefully you) is attempting to log in to your npm account. To complete the login, enter the one-time password below:
+
+63850291
+
+This one-time password is valid for 5 minutes.
+
+If this wasn't you, we recommend changing your password: https://www.npmjs.com/settings/alicebm/profile
+
+Thanks,
+The npm team
+
+npm, Inc. (a GitHub company)
+88 Colin P Kelly Jr Street, San Francisco, CA 94107
+

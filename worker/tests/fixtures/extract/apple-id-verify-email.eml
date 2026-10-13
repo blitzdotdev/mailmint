@@ -1,0 +1,88 @@
+From: Apple <appleid@id.apple.com>
+To: alice@aisocket.dev
+Subject: Verify your Apple Account email address
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <9882550851b3cec343144f16@id.apple.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="--==_mimepart_9882550851b3_cec34314"
+
+----==_mimepart_9882550851b3_cec34314
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Dear Alice Example,
+
+You have selected this email address as your new Apple Account. To verify t=
+his email address belongs to you, enter the code below on the email verific=
+ation page:
+
+925138
+
+This code will expire three hours after this email was sent.
+
+Why you received this email.
+Apple requires verification whenever an email address is selected as an App=
+le Account. Your Apple Account cannot be used until you verify it.
+
+If you did not make this request, you can ignore this email. No Apple Accou=
+nt will be created without verification.
+
+Apple Account | Support | Privacy Policy
+Copyright =C2=A9 2026 Apple Inc. One Apple Park Way, Cupertino, CA 95014, U=
+nited States All rights reserved.
+
+
+----==_mimepart_9882550851b3_cec34314
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html>
+<html lang=3D"en"><head><meta charset=3D"utf-8"><meta name=3D"viewport" con=
+tent=3D"width=3Ddevice-width"><title>Verify your Apple Account email addres=
+s</title>
+<style>
+  body { margin:0; -webkit-text-size-adjust:100%; }
+  @media only screen and (max-width: 736px) { .main { width: 100% !importan=
+t; } .code { font-size: 24px !important; } }
+  .footer a { color: #888888; }
+</style></head>
+<body style=3D"margin:0;background-color:#ffffff">
+<table role=3D"presentation" class=3D"main" width=3D"685" align=3D"center" =
+cellpadding=3D"0" cellspacing=3D"0" border=3D"0" style=3D"width:685px;font-=
+family:'SF Pro Text','Myriad Set Pro','Helvetica Neue',Helvetica,Arial,sans=
+-serif;">
+<tr><td align=3D"right" style=3D"padding:19px 0 0 0"><img src=3D"https://ww=
+w.apple.com/email/images/apple_logo_web_2x.png" width=3D"22" height=3D"26" =
+alt=3D"Apple"></td></tr>
+<tr><td style=3D"padding-top:40px;font-size:24px;line-height:28px;color:#11=
+1111;font-weight:600">Verify your email address.</td></tr>
+<tr><td style=3D"padding-top:18px;font-size:14px;line-height:21px;color:#33=
+3333">
+<p>Dear Alice Example,</p>
+<p>You have selected this email address as your new Apple Account. To verif=
+y this email address belongs to you, enter the code below on the email veri=
+fication page:</p>
+<p class=3D"code" style=3D"font-size:26px;line-height:32px;font-weight:bold=
+;color:#111111;margin:24px 0">925138</p>
+<p>This code will expire three hours after this email was sent.</p>
+<p><b>Why you received this email.</b><br>Apple requires verification whene=
+ver an email address is selected as an Apple Account. Your Apple Account ca=
+nnot be used until you verify it.</p>
+<p>If you did not make this request, you can ignore this email. No Apple Ac=
+count will be created without verification.</p>
+<p>Sincerely,<br>Apple</p>
+</td></tr>
+<tr><td class=3D"footer" style=3D"padding-top:40px;font-size:12px;line-heig=
+ht:16px;color:#888888;border-top:1px solid #d6d6d6">
+<a href=3D"https://account.apple.com/" style=3D"color:#888888">Apple Accoun=
+t</a> | <a href=3D"https://support.apple.com/" style=3D"color:#888888">Supp=
+ort</a> | <a href=3D"https://www.apple.com/legal/privacy/" style=3D"color:#=
+888888">Privacy Policy</a><br>
+Copyright =C2=A9 2026 Apple Inc. <a style=3D"color:#888888;text-decoration:=
+none">One Apple Park Way, Cupertino, CA 95014, United States</a> All rights=
+ reserved.
+</td></tr>
+</table></body></html>
+
+
+----==_mimepart_9882550851b3_cec34314--

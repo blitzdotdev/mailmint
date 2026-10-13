@@ -1,0 +1,14 @@
+From: burner-demo <no-reply@netlify.com>
+To: alice@aisocket.dev
+Subject: Confirm Your Signup
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <ea7b7a850e3b1e3fcdf34954@netlify.com>
+MIME-Version: 1.0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<h2>Confirm your signup</h2>
+
+<p>Follow this link to confirm your user:</p>
+<p><a href="https://burner-demo.netlify.app/#confirmation_token=jKPY57bB25j8t1GikWKzyf">Confirm your mail</a></p>
+

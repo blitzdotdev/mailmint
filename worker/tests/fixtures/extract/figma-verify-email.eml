@@ -1,0 +1,63 @@
+From: Figma <no-reply@email.figma.com>
+To: alice@aisocket.dev
+Subject: Verify your email address
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <861c381604bb787b926d9afb@email.figma.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="--==_mimepart_861c381604bb_787b926d"
+
+----==_mimepart_861c381604bb_787b926d
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Verify your email address
+
+Hi alice,
+
+Please verify your email address to finish setting up your Figma account.
+
+Verify email ( https://www.figma.com/verify?fuid=1234567890123456789&token=d7Wb20jJcCrgmyCcj84FsKfCekApdOXgZJLmi636 )
+
+If you didn't create a Figma account, you can safely ignore this email.
+
+Figma, Inc.
+760 Market St, Floor 10
+San Francisco, CA 94102
+
+
+----==_mimepart_861c381604bb_787b926d
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html lang=3D"en"><head><meta charset=3D"utf-8"><title>Verif=
+y your email address</title>
+<style>body{margin:0}a{color:#0d99ff}@media (max-width:620px){.wrap{width:1=
+00%!important}}</style></head>
+<body style=3D"background:#ffffff;font-family:Inter,'Helvetica Neue',Helvet=
+ica,Arial,sans-serif">
+<table class=3D"wrap" width=3D"560" align=3D"center" cellpadding=3D"0" cell=
+spacing=3D"0" style=3D"width:560px">
+<tr><td style=3D"padding:40px 0 24px"><img src=3D"https://static.figma.com/=
+uploads/figma-logo-email.png" width=3D"24" height=3D"36" alt=3D"Figma"></td=
+></tr>
+<tr><td style=3D"font-size:24px;font-weight:600;color:#000000;padding-botto=
+m:24px">Verify your email address</td></tr>
+<tr><td style=3D"font-size:14px;line-height:24px;color:#333333">Hi alice,<b=
+r><br>Please verify your email address to finish setting up your Figma acco=
+unt.</td></tr>
+<tr><td style=3D"padding:24px 0"><a href=3D"https://www.figma.com/verify?fu=
+id=3D1234567890123456789&amp;token=3Dd7Wb20jJcCrgmyCcj84FsKfCekApdOXgZJLmi6=
+36" style=3D"background:#0d99ff;border-radius:6px;color:#ffffff;display:inl=
+ine-block;font-size:14px;font-weight:500;padding:10px 20px;text-decoration:=
+none">Verify email</a></td></tr>
+<tr><td style=3D"font-size:14px;line-height:24px;color:#333333">If you didn=
+'t create a Figma account, you can safely ignore this email.</td></tr>
+<tr><td style=3D"font-size:11px;line-height:16px;color:#b3b3b3;padding-top:=
+40px">Figma, Inc.<br>760 Market St, Floor 10<br>San Francisco, CA 94102<br>=
+<a href=3D"https://www.figma.com/privacy/" style=3D"color:#b3b3b3">Privacy<=
+/a> =C2=B7 <a href=3D"https://help.figma.com/" style=3D"color:#b3b3b3">Help=
+</a></td></tr>
+</table></body></html>
+
+
+----==_mimepart_861c381604bb_787b926d--

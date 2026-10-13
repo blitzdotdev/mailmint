@@ -1,0 +1,7 @@
+.env
+.dev.vars
+.prod.vars
+node_modules/
+.wrangler/
+dist/
+.trash/

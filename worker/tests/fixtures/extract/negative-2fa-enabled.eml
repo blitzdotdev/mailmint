@@ -1,0 +1,30 @@
+From: GitHub <noreply@github.com>
+To: alice@aisocket.dev
+Subject: [GitHub] Two-factor authentication has been enabled on your account
+Date: Sat, 12 Oct 2026 09:41:07 +0000
+Message-ID: <53e53e340087d4aaf0fc686c@github.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hey alice-bm!
+
+Two-factor authentication (2FA) has been successfully enabled on your account.
+
+When signing in, you will now be asked for a verification code from your authentication app (Authy, 1Password, Google Authenticator, etc.) in addition to your password.
+
+Recovery codes are the only way to access your account if you lose access to your device. If you haven't already, download your recovery codes and store them somewhere safe:
+https://github.com/settings/auth/recovery-codes
+
+Enabled at: Sat, 12 Oct 2026 09:41:07 UTC
+From: Chrome 129.0.6668.90 on macOS 14.6.1 (203.0.113.42)
+
+To learn more about 2FA, visit https://docs.github.com/authentication/securing-your-account-with-two-factor-authentication-2fa
+
+If you did not enable two-factor authentication, please contact GitHub Support immediately: https://support.github.com/contact
+
+Thanks,
+The GitHub Team
+
+GitHub, Inc. ・88 Colin P Kelly Jr Street ・San Francisco, CA 94107
+
