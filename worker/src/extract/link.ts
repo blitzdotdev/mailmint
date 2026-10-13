@@ -238,8 +238,17 @@ function hasTokenLike(u: URL): boolean {
 	for (const seg of u.pathname.split('/')) values.push(seg);
 	for (const [k, v] of u.searchParams) if (!/^utm_|^ref_?$|^lang$|^locale$/i.test(k)) values.push(v);
 	for (const piece of safeDecode(u.hash.slice(1)).split(/[&=:#/]/)) values.push(piece);
-	return values.some((v) => v.length >= 16 && /\d/.test(v) && /[A-Za-z]/.test(v) && /^[A-Za-z0-9_\-.~%+=]+$/.test(v));
+	if (values.some((v) => v.length >= 16 && /\d/.test(v) && /[A-Za-z]/.test(v) && /^[A-Za-z0-9_\-.~%+=]+$/.test(v))) return true;
+	// A value under a parameter named like a credential counts whatever its shape: magic
+	// links often carry the same short numeric code the user could type (e.g. Perplexity's
+	// /api/auth/callback/email?…&token=000305).
+	for (const [k, v] of u.searchParams) {
+		if (TOKEN_PARAM_RE.test(k) && /^[A-Za-z0-9_\-.~%+=]{4,}$/.test(v)) return true;
+	}
+	return false;
 }
+
+const TOKEN_PARAM_RE = /^(?:token|otp|code|magic|oobcode|ticket|nonce|sig|signature|hash|verification_?(?:token|code)|confirmation_?token|auth_?token|access_?token|login_?token|key)$/i;
 
 function registrableDomain(host: string): string {
 	const parts = host.toLowerCase().split('.').filter(Boolean);
@@ -338,7 +347,11 @@ function classify(raw: RawLink, subjectContext: boolean, sender: string | null):
 	let best = 0;
 	for (const k of kinds) best = Math.max(best, us[k] + ts[k]);
 	const urlTotal = us.verify + us.magic + us.reset;
-	if (urlTotal === 0 && !subjectContext) best *= 0.5; // only the wording says "sign in": need the subject to agree
+	// Only the wording says "sign in": need the subject to agree. An anchor that itself says
+	// verify/confirm/reset is explicit enough, which matters for ESP click-tracking redirects
+	// (Mailgun /c/…, SendGrid /ls/click…) whose URLs carry no words at all.
+	const explicitAnchor = !!raw.text && (textSignals(raw.text, 1).verify >= 35 || textSignals(raw.text, 1).reset >= 35);
+	if (urlTotal === 0 && !subjectContext && !explicitAnchor) best *= 0.5;
 	if (!token) best *= 0.5; // real action links carry a token
 	let score = best + (token ? 10 : 0);
 	if (subjectContext && best > 0) score += 5;

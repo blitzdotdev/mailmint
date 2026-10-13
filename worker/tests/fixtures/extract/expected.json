@@ -205,5 +205,29 @@
   "zh-email-verification-code.eml": {
     "code": "590362",
     "link": null
+  },
+  "real-notion-signup-code.eml": {
+    "code": "860389",
+    "link": "https://app.notion.com/loginwithemail?state=",
+    "linkKind": "magic"
+  },
+  "real-substack-create-account.eml": {
+    "code": null,
+    "link": "https://email.mg-d0.substack.com/c/",
+    "linkKind": "verify"
+  },
+  "real-perplexity-sign-in.eml": {
+    "code": "000305",
+    "link": "https://www.perplexity.ai/api/auth/callback/email?",
+    "linkKind": "magic"
+  },
+  "real-claude-magic-link.eml": {
+    "code": null,
+    "link": "https://claude.ai/magic-link#",
+    "linkKind": "magic"
+  },
+  "real-vercel-no-account.eml": {
+    "code": null,
+    "link": null
   }
 }

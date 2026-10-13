@@ -126,4 +126,4 @@ export const DELIM_END_RE = /(?:[:：=]|(?<![\p{L}])(?:is|was|are|ist|lautet|est
 
 /** Subject/body words showing the message asks to verify, confirm or sign in. */
 export const VERIFY_CONTEXT_RE =
-	/(?<![\p{L}])(?:verif\p{L}*|confirm\p{L}*|activat\p{L}*|validat\p{L}*|sign[\s-]?(?:in|up)|log[\s-]?(?:in|on)|magic\s?link|one[\s-]?time|passcode|otp|2fa|two[\s-]?factor|authenticat\p{L}*|invit\p{L}*|reset|password|passwort|contrase[ñn]a|senha|mot de passe)(?![\p{L}])|验证|驗證|認証|인증|подтвержд|bestätig|verific|vérifi|登录|ログイン|로그인/iu;
+	/(?<![\p{L}])(?:verif\p{L}*|confirm\p{L}*|activat\p{L}*|validat\p{L}*|sign[\s-]?(?:in|up)|log[\s-]?(?:in|on)|magic\s?link|one[\s-]?time|passcode|otp|2fa|two[\s-]?factor|authenticat\p{L}*|invit\p{L}*|reset|password|passwort|contrase[ñn]a|senha|mot de passe|create\s+(?:your\s+|an\s+|a\s+new\s+)?account|complete\s+(?:your\s+)?(?:registration|sign[\s-]?up|account)|finish\s+(?:signing|setting)\s+up)(?![\p{L}])|验证|驗證|認証|인증|подтвержд|bestätig|verific|vérifi|登录|ログイン|로그인/iu;
