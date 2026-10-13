@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/wrangler/config-schema.json",
   // The hosted instance (mail.aisocket.dev, mail on *@aisocket.dev).
-  // Self-hosting: change `addresses`, `routes`, MAIL_DOMAINS, the WEB_ACCESS_*
+  // Self-hosting: change `routes`, MAIL_DOMAINS, the WEB_ACCESS_*
   // values and the resource IDs; see docs/self-host.md.
   "name": "burnermail",
   "main": "src/index.tsx",
@@ -10,10 +10,9 @@
   "workers_dev": false,
   "preview_urls": false,
   "routes": [{ "pattern": "mail.aisocket.dev", "custom_domain": true }],
-  // Catch-all: every *@aisocket.dev message goes to this Worker's email() handler.
-  // Apex domains only (Email Routing cannot catch-all a subdomain). Top-level only;
-  // `wrangler deploy` reconciles the rule.
-  "addresses": ["*@aisocket.dev"],
+  // Mail reaches the email() handler through the domain's Email Routing catch-all
+  // (*@aisocket.dev → this Worker), set by scripts/catch-all.sh. Wrangler's `addresses`
+  // field can manage it instead, but needs account-level Email Routing token permissions.
   "observability": { "enabled": true },
   "keep_vars": false,
   "vars": {

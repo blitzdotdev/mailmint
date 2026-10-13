@@ -12,7 +12,7 @@
 1. Email Routing → Onboard Domain → aisocket.dev → Activate. Added MX `route{1,2,3}.mx.cloudflare.net`, SPF `v=spf1 include:_spf.mx.cloudflare.net ~all`, DKIM `cf2024-1._domainkey`. No conflicting records.
 2. Created the `burnermail-deploy` token and the Access application (via the dashboard API from a connected browser tab).
 3. `wrangler d1 create burnermail`, `r2 bucket create burnermail-raw`, `kv namespace create burnermail-oauth`.
-4. `bash scripts/deploy.sh deploy`: the `addresses: ["*@aisocket.dev"]` entry creates the catch-all → Worker rule.
+4. `bash scripts/deploy.sh deploy`. The first attempt used wrangler `addresses`; its account-level rules/plan call failed with the zone-scoped token, so the catch-all is set by `scripts/catch-all.sh` (zone API) instead: enabled, `*@aisocket.dev` → Worker `burnermail`.
 
 ## Operations
 

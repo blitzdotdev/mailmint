@@ -7,7 +7,7 @@ Self-hosted disposable email on Cloudflare (see README.md, CONTEXT.md for terms)
 - `npm run check`: tsc for the worker.
 - `npm test -w worker`: unit tests (`node --test --experimental-strip-types`). Modules imported by tests must stay strip-types compatible: no enums, no parameter properties, explicit `.ts` imports.
 - `node harness/run.mjs [NN|NN-MM] [--continue] [--keep]`: starts its own `wrangler dev` with throwaway state and runs `harness/scenarios/NN-*.mjs`. Email is injected through `/cdn-cgi/handler/email`. Run it after any behaviour change.
-- `bash scripts/deploy.sh deploy|smoke|dev`. `deploy` runs check, tests, remote D1 migrations, `wrangler deploy` (which also reconciles the `addresses` catch-all rule), then the smoke test.
+- `bash scripts/deploy.sh deploy|smoke|dev`. `deploy` runs check, tests, remote D1 migrations, `wrangler deploy`, `scripts/catch-all.sh` (Email Routing catch-all → Worker), then the smoke test.
 
 ## Rules
 
