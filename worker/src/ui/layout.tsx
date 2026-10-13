@@ -66,6 +66,14 @@ if (live) {
 }
 `;
 
+/** Content hash for asset URLs, so a deploy never serves pages with stale cached CSS/JS. */
+function contentHash(text: string): string {
+  let h = 5381;
+  for (let i = 0; i < text.length; i++) h = ((h << 5) + h + text.charCodeAt(i)) >>> 0;
+  return h.toString(36);
+}
+const ASSET_VERSION = contentHash(CSS + JS);
+
 export function Layout(props: { title: string; nav?: boolean; children: Child }) {
   return (
     <html lang="en">
@@ -74,8 +82,8 @@ export function Layout(props: { title: string; nav?: boolean; children: Child })
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         {props.nav ? null : <meta name="referrer" content="no-referrer" />}
         <title>{props.title} · mailmint</title>
-        <link rel="stylesheet" href="/assets/app.css" />
-        <script src="/assets/app.js" defer></script>
+        <link rel="stylesheet" href={`/assets/app.css?v=${ASSET_VERSION}`} />
+        <script src={`/assets/app.js?v=${ASSET_VERSION}`} defer></script>
       </head>
       <body>
         <header class="top">
