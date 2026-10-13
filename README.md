@@ -80,8 +80,12 @@ Share links expose the same calls under `/i/<token>/…` (`/wait`, `/messages`, 
 
 ## CLI
 
-Zero dependencies, Node 22.21+. Until it's on npm, run it from a checkout (`node cli/bin/burnermail.mjs …`) or
-link it onto your PATH: `ln -s "$PWD/cli/bin/burnermail.mjs" ~/.local/bin/burnermail`.
+Zero dependencies, Node 22.21+, one file. Until it's on npm, run it from a checkout (`node cli/bin/burnermail.mjs …`)
+or copy it onto your PATH: `install -m 755 cli/bin/burnermail.mjs ~/.local/bin/burnermail`.
+
+For Claude Code, `skills/burnermail/SKILL.md` teaches agents the workflow. Copy the folder into
+`~/.claude/skills/`, or in [aibox](https://github.com/blitzdotdev/aibox) run `aibox skill add skills/burnermail`
+once to give every project's sandbox the skill (the CLI login stays per project).
 
 ```
 burnermail login --url https://mail.example.com --key bm_key_…   # key from /admin/keys
