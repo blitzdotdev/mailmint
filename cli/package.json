@@ -12,9 +12,22 @@
     "README.md"
   ],
   "scripts": {
-    "test": "node bin/mailmint.mjs --help > /dev/null && echo \"cli ok (behaviour is covered by harness/scenarios/11-cli.mjs)\""
+    "test": "node bin/mailmint.mjs --help > /dev/null && echo \"cli ok (behaviour is covered by harness/scenarios/11-cli.mjs)\"",
+    "prepublishOnly": "node ../scripts/build.mjs --check && npm test"
   },
   "engines": {
     "node": ">=22.21"
-  }
+  },
+  "homepage": "https://mail.aisocket.dev",
+  "keywords": [
+    "email",
+    "disposable",
+    "temp-mail",
+    "otp",
+    "verification",
+    "testing",
+    "agents",
+    "cloudflare",
+    "cli"
+  ]
 }
