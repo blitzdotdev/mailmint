@@ -194,85 +194,104 @@ function inboxAddressLookup(c: C) {
   };
 }
 
-// ---------- /v1 (Bearer: owner API key or inbox token) ----------
+// ---------- /v1 (Bearer: owner API key or inbox token) and /admin/api (owner, behind Access) ----------
 
-export const v1 = new Hono<{ Bindings: Env; Variables: Vars }>();
+type ApiApp = Hono<{ Bindings: Env; Variables: Vars }>;
 
-v1.use("*", async (c, next) => {
-  c.set("principal", await principalFromBearer(c));
-  await next();
-});
-
-const v1Base: MessageBase = (id) => `/v1/messages/${id}`;
-
-v1.get("/me", (c) => {
-  const p = c.get("principal");
-  return c.json(p.kind === "owner" ? { kind: "owner", key: p.name } : { kind: "inbox", inbox: p.inbox.address });
-});
-
-v1.post("/inboxes", async (c) => {
-  requireOwner(c.get("principal"));
-  const body = await jsonBody(c, ["local", "address", "domain", "ttl_hours", "label"]);
-  const local = optString(body, "local") ?? optString(body, "address");
-  const created = await createInbox(c.env, new URL(c.req.url).origin, {
-    local,
-    domain: optString(body, "domain"),
-    ttl_hours: optNumber(body, "ttl_hours"),
-    label: optString(body, "label"),
+/** The REST surface, mounted at `prefix` (message URLs in responses are built from it). */
+function apiRoutes(app: ApiApp, prefix: string): ApiApp {
+  const v1Base: MessageBase = (id) => `${prefix}/messages/${id}`;
+  app.get("/me", (c) => {
+    const p = c.get("principal");
+    return c.json(p.kind === "owner" ? { kind: "owner", key: p.name } : { kind: "inbox", inbox: p.inbox.address });
   });
-  return c.json(presentInbox(created.inbox, { token: created.token, url: created.url }), 201);
-});
 
-v1.get("/inboxes", async (c) => {
-  const p = c.get("principal");
-  const q = query(c, ["limit", "q"]);
-  if (p.kind === "inbox") return c.json({ inboxes: [presentInbox(p.inbox)] });
-  const rows = await listInboxes(c.env.DB, { limit: intParam(q.limit, "limit", 50, 1, 200), query: q.q });
-  return c.json({ inboxes: rows.map((r) => presentInbox(r)) });
-});
+  app.post("/inboxes", async (c) => {
+    requireOwner(c.get("principal"));
+    const body = await jsonBody(c, ["local", "address", "domain", "ttl_hours", "label"]);
+    const local = optString(body, "local") ?? optString(body, "address");
+    const created = await createInbox(c.env, new URL(c.req.url).origin, {
+      local,
+      domain: optString(body, "domain"),
+      ttl_hours: optNumber(body, "ttl_hours"),
+      label: optString(body, "label"),
+    });
+    return c.json(presentInbox(created.inbox, { token: created.token, url: created.url }), 201);
+  });
 
-v1.get("/inboxes/:address", async (c) => {
-  query(c, []);
-  return c.json(presentInbox(await findInbox(c.env, c.get("principal"), c.req.param("address"))));
-});
+  app.get("/inboxes", async (c) => {
+    const p = c.get("principal");
+    const q = query(c, ["limit", "q"]);
+    if (p.kind === "inbox") return c.json({ inboxes: [presentInbox(p.inbox)] });
+    const rows = await listInboxes(c.env.DB, { limit: intParam(q.limit, "limit", 50, 1, 200), query: q.q });
+    return c.json({ inboxes: rows.map((r) => presentInbox(r)) });
+  });
 
-v1.patch("/inboxes/:address", async (c) => {
-  requireOwner(c.get("principal"));
-  const inbox = await findInbox(c.env, c.get("principal"), c.req.param("address"));
-  const body = await jsonBody(c, ["ttl_hours", "label"]);
-  const ttl = optNumber(body, "ttl_hours");
-  const label = optString(body, "label");
-  return c.json(
-    presentInbox(
-      await updateInboxSettings(c.env, inbox, {
-        ...(ttl !== undefined ? { ttl_hours: ttl } : {}),
-        ...(label !== undefined ? { label } : {}),
-      }),
-    ),
-  );
-});
+  app.get("/inboxes/:address", async (c) => {
+    query(c, []);
+    return c.json(presentInbox(await findInbox(c.env, c.get("principal"), c.req.param("address"))));
+  });
 
-v1.delete("/inboxes/:address", async (c) => {
-  const inbox = await findInbox(c.env, c.get("principal"), c.req.param("address"));
-  await deleteInbox(c.env, inbox);
-  return c.json({ deleted: inbox.address });
-});
+  app.patch("/inboxes/:address", async (c) => {
+    requireOwner(c.get("principal"));
+    const inbox = await findInbox(c.env, c.get("principal"), c.req.param("address"));
+    const body = await jsonBody(c, ["ttl_hours", "label"]);
+    const ttl = optNumber(body, "ttl_hours");
+    const label = optString(body, "label");
+    return c.json(
+      presentInbox(
+        await updateInboxSettings(c.env, inbox, {
+          ...(ttl !== undefined ? { ttl_hours: ttl } : {}),
+          ...(label !== undefined ? { label } : {}),
+        }),
+      ),
+    );
+  });
 
-v1.get("/inboxes/:address/messages", async (c) =>
-  listMessagesResponse(c, await findInbox(c.env, c.get("principal"), c.req.param("address")), v1Base));
+  app.delete("/inboxes/:address", async (c) => {
+    const inbox = await findInbox(c.env, c.get("principal"), c.req.param("address"));
+    await deleteInbox(c.env, inbox);
+    return c.json({ deleted: inbox.address });
+  });
 
-v1.get("/inboxes/:address/wait", async (c) =>
-  waitResponse(c, await findInbox(c.env, c.get("principal"), c.req.param("address")), v1Base));
+  app.get("/inboxes/:address/messages", async (c) =>
+    listMessagesResponse(c, await findInbox(c.env, c.get("principal"), c.req.param("address")), v1Base));
 
-v1.get("/messages/:id", async (c) => messageResponse(c, messageId(c), v1Base, inboxAddressLookup(c)));
-v1.get("/messages/:id/raw", async (c) => rawResponse(c, messageId(c)));
-v1.get("/messages/:id/html", async (c) => {
-  const q = query(c, ["images"]);
-  const m = await findMessage(c.env, c.get("principal"), messageId(c));
-  return htmlResponse(c, await messageHtml(c.env, m), q.images === "1");
-});
-v1.get("/messages/:id/attachments/:n", async (c) =>
-  attachmentResponse(c, messageId(c), intParam(c.req.param("n"), "n", 0, 0, 100)));
+  app.get("/inboxes/:address/wait", async (c) =>
+    waitResponse(c, await findInbox(c.env, c.get("principal"), c.req.param("address")), v1Base));
+
+  app.get("/messages/:id", async (c) => messageResponse(c, messageId(c), v1Base, inboxAddressLookup(c)));
+  app.get("/messages/:id/raw", async (c) => rawResponse(c, messageId(c)));
+  app.get("/messages/:id/html", async (c) => {
+    const q = query(c, ["images"]);
+    const m = await findMessage(c.env, c.get("principal"), messageId(c));
+    return htmlResponse(c, await messageHtml(c.env, m), q.images === "1");
+  });
+  app.get("/messages/:id/attachments/:n", async (c) =>
+    attachmentResponse(c, messageId(c), intParam(c.req.param("n"), "n", 0, 0, 100)));
+  return app;
+}
+
+export const v1: ApiApp = apiRoutes(
+  new Hono<{ Bindings: Env; Variables: Vars }>().use("*", async (c, next) => {
+    c.set("principal", await principalFromBearer(c));
+    await next();
+  }),
+  "/v1",
+);
+
+/**
+ * Same API for the dashboard's own scripts (the agent-socket "Connect an AI chat"
+ * tools). Mounted under /admin, so Cloudflare Access and the same-origin check
+ * have already run; the caller is the owner.
+ */
+export const ownerApi: ApiApp = apiRoutes(
+  new Hono<{ Bindings: Env; Variables: Vars }>().use("*", async (c, next) => {
+    c.set("principal", { kind: "owner", name: "dashboard" });
+    await next();
+  }),
+  "/admin/api",
+);
 
 // ---------- /i/:token (capability link: the URL is the key to one inbox) ----------
 

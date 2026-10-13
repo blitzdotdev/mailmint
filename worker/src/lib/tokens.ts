@@ -1,8 +1,8 @@
 // Capability tokens and API keys. Only SHA-256 digests are stored; the raw
 // value is shown once. 24 random bytes = 192 bits.
 
-export const INBOX_TOKEN_PREFIX = "bm_in_";
-export const API_KEY_PREFIX = "bm_key_";
+export const INBOX_TOKEN_PREFIX = "mm_in_";
+export const API_KEY_PREFIX = "mm_key_";
 
 export function randomBase64Url(bytes: number): string {
   const buf = crypto.getRandomValues(new Uint8Array(bytes));
@@ -19,7 +19,7 @@ export function newApiKey(): string {
   return API_KEY_PREFIX + randomBase64Url(24);
 }
 
-const TOKEN_SHAPE = /^bm_(in|key)_[A-Za-z0-9_-]{32}$/;
+const TOKEN_SHAPE = /^mm_(in|key)_[A-Za-z0-9_-]{32}$/;
 
 export function looksLikeToken(value: string): boolean {
   return TOKEN_SHAPE.test(value);

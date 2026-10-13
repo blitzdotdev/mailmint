@@ -1,4 +1,4 @@
-# Self-hosting burnermail
+# Self-hosting mailmint
 
 ## Requirements
 
@@ -33,9 +33,9 @@ CLOUDFLARE_API_TOKEN=…
 npm install
 set -a; . ./.env; set +a
 cd worker
-npx wrangler d1 create burnermail            # → database_id
-npx wrangler r2 bucket create burnermail-raw
-npx wrangler kv namespace create burnermail-oauth   # → id
+npx wrangler d1 create mailmint            # → database_id
+npx wrangler r2 bucket create mailmint-raw
+npx wrangler kv namespace create mailmint-oauth   # → id
 ```
 
 ## 4. Cloudflare Access for the owner pages
@@ -61,10 +61,10 @@ Everything else stays public at the edge and is authenticated by the Worker (API
 ```sh
 bash scripts/deploy.sh deploy     # check, tests, D1 migrations, wrangler deploy, catch-all → Worker, smoke test
 bash scripts/new-key.sh laptop    # mint an API key without the browser (or use /admin/keys)
-npx burnermail login --url https://mail.example.com --key <key>
+npx mailmint login --url https://mail.example.com --key <key>
 ```
 
-Send a real email to `anything@example.com` and run `npx burnermail ls`.
+Send a real email to `anything@example.com` and run `npx mailmint ls`.
 
 ## Updating
 

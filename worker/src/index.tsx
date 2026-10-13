@@ -11,6 +11,9 @@ import { getMessage, listMessages } from "./store/messages.ts";
 import { admin } from "./ui/admin.tsx";
 import { inboxAgentsMd, serviceAgentsMd } from "./ui/docs.ts";
 import { CSS, JS, PAGE_HEADERS } from "./ui/layout.tsx";
+import agentSocketSdk from "./vendor/agent-socket-sdk.client.js";
+import socketTools from "./vendor/socket-tools.client.js";
+import connectPage from "./ui/connect.client.js";
 import { CapabilityPage, LandingPage } from "./ui/views.tsx";
 
 export { InboxSignal } from "./signal.ts";
@@ -52,6 +55,13 @@ function html(c: Context, node: unknown) {
 
 app.get("/assets/app.css", (c) => c.body(CSS, 200, { "Content-Type": "text/css; charset=utf-8", "Cache-Control": "public, max-age=300" }));
 app.get("/assets/app.js", (c) => c.body(JS, 200, { "Content-Type": "text/javascript; charset=utf-8", "Cache-Control": "public, max-age=300" }));
+for (const [path, source] of [
+  ["/assets/agent-socket-sdk.js", agentSocketSdk],
+  ["/assets/socket-tools.js", socketTools],
+  ["/assets/connect.js", connectPage],
+] as const) {
+  app.get(path, (c) => c.body(source, 200, { "Content-Type": "text/javascript; charset=utf-8", "Cache-Control": "public, max-age=300" }));
+}
 app.get("/healthz", (c) => c.json({ ok: true }));
 
 app.get("/", (c) => {
@@ -67,7 +77,7 @@ for (const path of ["/agents.md", "/llms.txt", "/.well-known/agents.md"]) {
 app.get("/skill.md", (c) =>
   markdown(
     c,
-    `---\nname: burnermail\ndescription: Create disposable email inboxes and wait for verification codes or links when testing sign-up, login or password-reset flows.\n---\n\n` +
+    `---\nname: mailmint\ndescription: Create disposable email inboxes and wait for verification codes or links when testing sign-up, login or password-reset flows.\n---\n\n` +
       serviceAgentsMd(new URL(c.req.url).origin, config(c.env).domains),
   ),
 );

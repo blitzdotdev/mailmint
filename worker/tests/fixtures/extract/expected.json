@@ -51,7 +51,7 @@
   },
   "firebase-verify-email.eml": {
     "code": null,
-    "link": "https://burner-demo-4f2a1.firebaseapp.com/__/auth/action?mode=verifyEmail&oobCode=9PIuijmjm4TB0Fy8Gn9HFVc9c3W76C6tOUdO5OetcSkSUibW&apiKey=AIzaSytmcRMHWKicHUORhJvMmZMMtk13AnvGwl9&lang=en",
+    "link": "https://mint-demo-4f2a1.firebaseapp.com/__/auth/action?mode=verifyEmail&oobCode=9PIuijmjm4TB0Fy8Gn9HFVc9c3W76C6tOUdO5OetcSkSUibW&apiKey=AIzaSytmcRMHWKicHUORhJvMmZMMtk13AnvGwl9&lang=en",
     "linkKind": "verify"
   },
   "github-device-verification.eml": {
@@ -128,7 +128,7 @@
   },
   "netlify-identity-confirm.eml": {
     "code": null,
-    "link": "https://burner-demo.netlify.app/#confirmation_token=jKPY57bB25j8t1GikWKzyf",
+    "link": "https://mint-demo.netlify.app/#confirmation_token=jKPY57bB25j8t1GikWKzyf",
     "linkKind": "verify"
   },
   "notion-login-code.eml": {

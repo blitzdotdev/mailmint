@@ -15,8 +15,8 @@ const UNTRUSTED =
 const MCP_MAX_WAIT_SECONDS = 120;
 const MAX_TEXT = 20_000;
 
-export function createBurnermailServer(env: Env, origin: string, identity: McpIdentity): McpServer {
-  const server = new McpServer({ name: "burnermail", title: "burnermail", version: "0.1.0" });
+export function createMailmintServer(env: Env, origin: string, identity: McpIdentity): McpServer {
+  const server = new McpServer({ name: "mailmint", title: "mailmint", version: "0.1.0" });
   const owner: Principal = { kind: "owner", name: `mcp:${identity.email}` };
   const base = (id: number) => `${origin}/v1/messages/${id}`;
   const webUrl = (address: string, id?: number) =>

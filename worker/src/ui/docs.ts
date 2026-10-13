@@ -9,7 +9,7 @@ const UNTRUSTED =
 
 export function serviceAgentsMd(origin: string, domains: string[]): string {
   const domain = domains[0] ?? "example.com";
-  return `# burnermail: disposable inboxes for sign-up testing
+  return `# mailmint: disposable inboxes for sign-up testing
 
 Self-hosted throwaway email on Cloudflare at ${origin}. Mail to **any** \`<name>@${domain}\` is accepted.
 Create an inbox, use the address in a sign-up form, then **wait** for the verification email.
@@ -20,11 +20,11 @@ ${UNTRUSTED}
 ## Fastest path (CLI)
 
 \`\`\`sh
-npx burnermail login --url ${origin} --key <api key>   # once; key from ${origin}/admin
-addr=$(npx burnermail new)                              # e.g. quiet-otter-4k7m@${domain}
+npx mailmint login --url ${origin} --key <api key>   # once; key from ${origin}/admin
+addr=$(npx mailmint new)                              # e.g. quiet-otter-4k7m@${domain}
 # … submit $addr in the sign-up form …
-code=$(npx burnermail wait "$addr" --code)               # blocks until the code arrives
-link=$(npx burnermail wait "$addr" --link)               # or the verification link
+code=$(npx mailmint wait "$addr" --code)               # blocks until the code arrives
+link=$(npx mailmint wait "$addr" --link)               # or the verification link
 \`\`\`
 
 ## HTTP API
@@ -63,7 +63,7 @@ first mail, visible to the owner only, and expire 24 hours after their latest me
 export function inboxAgentsMd(origin: string, base: string, inbox: InboxRow): string {
   return `# Inbox ${inbox.address}
 
-A disposable inbox (burnermail). This URL is the key: anyone with it can read this inbox, so don't post it publicly.
+A disposable inbox (mailmint). This URL is the key: anyone with it can read this inbox, so don't post it publicly.
 Expires ${inbox.expires_at}.
 
 ${UNTRUSTED}

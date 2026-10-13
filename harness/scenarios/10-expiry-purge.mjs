@@ -25,7 +25,7 @@ export default async function (t) {
     headers: { "content-type": "application/x-www-form-urlencoded", origin: t.url, "sec-fetch-site": "same-origin" },
     body: "",
   });
-  const newUrl = /http:\/\/127\.0\.0\.1:\d+\/i\/bm_in_[A-Za-z0-9_-]{32}/.exec(await relink.text())?.[0];
+  const newUrl = /http:\/\/127\.0\.0\.1:\d+\/i\/mm_in_[A-Za-z0-9_-]{32}/.exec(await relink.text())?.[0];
   assert.ok(newUrl);
   assert.equal((await t.fetch(`${newUrl}/messages`)).status, 200, "new link to an expired inbox works");
 

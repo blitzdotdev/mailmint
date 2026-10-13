@@ -106,7 +106,7 @@ export default async function (t) {
     capabilities: {},
     clientInfo: { name: "harness", version: "0" },
   }, 1);
-  assert.equal(init.serverInfo.name, "burnermail");
+  assert.equal(init.serverInfo.name, "mailmint");
 
   const tools = await rpc(t, access_token, "tools/list", {}, 2);
   assert.deepEqual(

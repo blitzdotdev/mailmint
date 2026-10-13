@@ -1,6 +1,6 @@
-# burnermail: notes for agents working on this repo
+# mailmint: notes for agents working on this repo
 
-Self-hosted disposable email on Cloudflare (see README.md, CONTEXT.md for terms). npm workspaces: `worker/` (the Worker), `cli/` (the `burnermail` npm CLI). `harness/` is the black-box test runner.
+Self-hosted disposable email on Cloudflare (see README.md, CONTEXT.md for terms). npm workspaces: `worker/` (the Worker), `cli/` (the `mailmint` npm CLI). `harness/` is the black-box test runner.
 
 ## Commands
 

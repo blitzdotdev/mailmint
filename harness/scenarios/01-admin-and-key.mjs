@@ -23,7 +23,7 @@ export default async function (t) {
   });
   assert.equal(res.status, 200);
   const html = await res.text();
-  const key = /bm_key_[A-Za-z0-9_-]{32}/.exec(html)?.[0];
+  const key = /mm_key_[A-Za-z0-9_-]{32}/.exec(html)?.[0];
   assert.ok(key, "key shown once on the page");
   t.state.key = key;
 

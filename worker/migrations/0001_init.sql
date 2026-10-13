@@ -41,7 +41,7 @@ CREATE TABLE messages (
 );
 CREATE INDEX messages_inbox ON messages (inbox_id, id);
 
--- Owner API keys for the REST API / CLI (bm_key_…). Only the SHA-256 is stored.
+-- Owner API keys for the REST API / CLI (mm_key_…). Only the SHA-256 is stored.
 CREATE TABLE api_keys (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,

@@ -6,7 +6,7 @@ export default async function (t) {
   assert.equal(created.status, 201, created.text);
   const inbox = created.json;
   assert.match(inbox.address, /^[a-z]+-[a-z]+-[0-9a-z]{4}@aisocket\.dev$/);
-  assert.match(inbox.token, /^bm_in_/);
+  assert.match(inbox.token, /^mm_in_/);
   assert.equal(inbox.url, `${t.url}/i/${inbox.token}`);
   assert.equal(inbox.label, "github test");
   t.state.inbox = inbox;

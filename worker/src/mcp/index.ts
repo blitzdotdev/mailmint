@@ -14,7 +14,7 @@ import {
   MCP_ROUTE,
   MCP_TOKEN_ENDPOINT,
 } from "./route.ts";
-import { createBurnermailServer } from "./server.ts";
+import { createMailmintServer } from "./server.ts";
 import type { Env } from "../env.ts";
 
 export interface McpWorkerEnv extends Env, AuthorizationEnv {
@@ -63,7 +63,7 @@ class McpApiHandler extends WorkerEntrypoint<McpWorkerEnv, OAuthGrantProps> {
     };
     const hostname = new URL(origin).hostname;
     const handler = createMcpHandler(
-      () => createBurnermailServer(this.env, origin, identity),
+      () => createMailmintServer(this.env, origin, identity),
       {
         route: MCP_ROUTE,
         allowedHostnames: [hostname],
@@ -109,7 +109,7 @@ function oauthError(
   scope?: string,
 ): Response {
   const challenge = [
-    'Bearer realm="burnermail"',
+    'Bearer realm="mailmint"',
     `error="${error}"`,
     `error_description="${description}"`,
     `resource_metadata="${origin}/.well-known/oauth-protected-resource${MCP_ROUTE}"`,
@@ -157,7 +157,7 @@ function getOAuthProvider(origin: string, web: WebHandler): OAuthProvider<McpWor
       : {}),
     scopes_supported: [MCP_READ_SCOPE, MCP_MANAGE_SCOPE],
     bearer_methods_supported: ["header"],
-    resource_name: "burnermail",
+    resource_name: "mailmint",
   },
   accessTokenTTL: 15 * 60,
   refreshTokenTTL: 30 * 24 * 60 * 60,

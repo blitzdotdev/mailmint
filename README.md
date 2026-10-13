@@ -1,4 +1,4 @@
-# burnermail
+# mailmint
 
 Self-hosted disposable email on Cloudflare, built for testing sign-up flows by hand **and by AI agents**.
 
@@ -7,9 +7,9 @@ Verification codes and links are extracted when the mail arrives, and a long-pol
 moment a matching message lands, so an agent can do this in two calls:
 
 ```sh
-addr=$(npx burnermail new)                    # quiet-otter-4k7m@your-domain
+addr=$(npx mailmint new)                    # quiet-otter-4k7m@your-domain
 # … submit $addr in the sign-up form …
-code=$(npx burnermail wait "$addr" --code)     # blocks until the code arrives → 482913
+code=$(npx mailmint wait "$addr" --code)     # blocks until the code arrives → 482913
 ```
 
 Why not sharklasers / mail.tm / 10minutemail? Their domains are on every disposable-email blocklist, the mail sits
@@ -27,7 +27,7 @@ none of those problems.
   Filters: sender, subject, plus-address tag, "has a code", "has a link".
 - **Plus addressing.** `name+github@domain` lands in `name@domain` tagged `github`.
 - **Four ways in**, all over the same operations:
-  - **CLI** (`npx burnermail`): zero dependencies, prints just the code with `--code`, honours `HTTPS_PROXY`.
+  - **CLI** (`npx mailmint`): zero dependencies, prints just the code with `--code`, honours `HTTPS_PROXY`.
   - **REST API** with owner API keys.
   - **Share links**: every created inbox has a capability URL (`/i/<token>`) that reads that one inbox with no
     other credential. It serves a live web page to browsers and an `agents.md` card to agents.
@@ -80,20 +80,20 @@ Share links expose the same calls under `/i/<token>/…` (`/wait`, `/messages`, 
 
 ## CLI
 
-Zero dependencies, Node 22.21+, one file. Until it's on npm, run it from a checkout (`node cli/bin/burnermail.mjs …`)
-or copy it onto your PATH: `install -m 755 cli/bin/burnermail.mjs ~/.local/bin/burnermail`.
+Zero dependencies, Node 22.21+, one file. Until it's on npm, run it from a checkout (`node cli/bin/mailmint.mjs …`)
+or copy it onto your PATH: `install -m 755 cli/bin/mailmint.mjs ~/.local/bin/mailmint`.
 
-For Claude Code, `skills/burnermail/SKILL.md` teaches agents the workflow. Copy the folder into
-`~/.claude/skills/`, or in [aibox](https://github.com/blitzdotdev/aibox) run `aibox skill add skills/burnermail`
+For Claude Code, `skills/mailmint/SKILL.md` teaches agents the workflow. Copy the folder into
+`~/.claude/skills/`, or in [aibox](https://github.com/blitzdotdev/aibox) run `aibox skill add skills/mailmint`
 once to give every project's sandbox the skill (the CLI login stays per project).
 
 ```
-burnermail login --url https://mail.example.com --key bm_key_…   # key from /admin/keys
-burnermail new [name] [--ttl 1d] [--label TEXT]
-burnermail wait <inbox> [--code|--link] [--from X] [--subject X] [--tag T] [--since ID|latest] [--timeout 2m]
-burnermail ls [inbox]
-burnermail read <id> [--text|--html|--raw]
-burnermail rm <inbox>
+mailmint login --url https://mail.example.com --key mm_key_…   # key from /admin/keys
+mailmint new [name] [--ttl 1d] [--label TEXT]
+mailmint wait <inbox> [--code|--link] [--from X] [--subject X] [--tag T] [--since ID|latest] [--timeout 2m]
+mailmint ls [inbox]
+mailmint read <id> [--text|--html|--raw]
+mailmint rm <inbox>
 ```
 
 `<inbox>` can be an address, its name part, or a share link (then no key is needed). `--json` everywhere.

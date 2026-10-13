@@ -40,10 +40,10 @@ test("randomLocal is valid and varied", () => {
 test("tokens have the documented shape and hash deterministically", async () => {
   const inbox = newInboxToken();
   const key = newApiKey();
-  assert.match(inbox, /^bm_in_[A-Za-z0-9_-]{32}$/);
-  assert.match(key, /^bm_key_[A-Za-z0-9_-]{32}$/);
+  assert.match(inbox, /^mm_in_[A-Za-z0-9_-]{32}$/);
+  assert.match(key, /^mm_key_[A-Za-z0-9_-]{32}$/);
   assert.ok(looksLikeToken(inbox) && looksLikeToken(key));
-  assert.ok(!looksLikeToken("bm_in_short") && !looksLikeToken("Bearer x"));
+  assert.ok(!looksLikeToken("mm_in_short") && !looksLikeToken("Bearer x"));
   assert.notEqual(newInboxToken(), inbox);
   assert.equal(await sha256Hex("abc"), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
 });
@@ -72,7 +72,7 @@ test("wait filter", () => {
 
 test("Access dev bypass only for localhost hosts", async () => {
   const env = { DEV_BYPASS_ACCESS: "1" };
-  for (const host of ["http://localhost:8787/admin", "http://127.0.0.1:1/admin", "http://8787.burnermail.aibox.localhost/admin"]) {
+  for (const host of ["http://localhost:8787/admin", "http://127.0.0.1:1/admin", "http://8787.mailmint.aibox.localhost/admin"]) {
     const r = await verifyAccessRequest(new Request(host), env);
     assert.equal(r.ok, true, host);
   }

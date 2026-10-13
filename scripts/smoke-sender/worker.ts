@@ -28,7 +28,7 @@ export default {
     const { messageId } = await env.EMAIL.send({
       from: env.FROM,
       to,
-      subject: String(body.subject ?? "burnermail smoke"),
+      subject: String(body.subject ?? "mailmint smoke"),
       text: body.text,
       html: body.html,
     });

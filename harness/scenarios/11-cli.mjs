@@ -38,7 +38,7 @@ export default async function (t) {
   // Share link works with no key at all.
   const inbox = (await t.api("POST", "/v1/inboxes", { body: {} })).json;
   await t.sendEmail({ to: inbox.address, subject: "code", text: "Your verification code is 864200" });
-  r = await t.cli(["wait", inbox.url, "--code", "--timeout", "5s"], { BURNERMAIL_KEY: "", BURNERMAIL_URL: "", BURNERMAIL_CONFIG: "/nonexistent/config.json" });
+  r = await t.cli(["wait", inbox.url, "--code", "--timeout", "5s"], { MAILMINT_KEY: "", MAILMINT_URL: "", MAILMINT_CONFIG: "/nonexistent/config.json" });
   assert.equal(r.code, 0, r.stderr);
   assert.equal(r.stdout, "864200");
 

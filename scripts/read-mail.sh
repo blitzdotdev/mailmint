@@ -12,5 +12,5 @@ if [ $# -eq 0 ]; then
 else
   [[ "$1" =~ ^[0-9]+$ ]] || { echo "id must be a number" >&2; exit 2; }
   q "select envelope_to, from_address, subject, received_at, best_code, best_link, text_body, raw_key from messages where id = $1" |
-    node -e 'const r = JSON.parse(require("fs").readFileSync(0))[0].results[0]; if (!r) process.exit(1); console.log(`To: ${r.envelope_to}\nFrom: ${r.from_address}\nSubject: ${r.subject}\nDate: ${r.received_at}\nCode: ${r.best_code ?? ""}\nLink: ${r.best_link ?? ""}\nRaw: r2://burnermail-raw/${r.raw_key}\n\n${r.text_body ?? "(no text body)"}`)'
+    node -e 'const r = JSON.parse(require("fs").readFileSync(0))[0].results[0]; if (!r) process.exit(1); console.log(`To: ${r.envelope_to}\nFrom: ${r.from_address}\nSubject: ${r.subject}\nDate: ${r.received_at}\nCode: ${r.best_code ?? ""}\nLink: ${r.best_link ?? ""}\nRaw: r2://mailmint-raw/${r.raw_key}\n\n${r.text_body ?? "(no text body)"}`)'
 fi

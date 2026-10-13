@@ -21,7 +21,7 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 const workerDir = join(root, "worker");
-const cliBin = join(root, "cli", "bin", "burnermail.mjs");
+const cliBin = join(root, "cli", "bin", "mailmint.mjs");
 const wrangler = join(root, "node_modules", ".bin", "wrangler");
 
 const args = process.argv.slice(2);
@@ -126,7 +126,7 @@ function makeContext(url, state) {
     cli(argv, env = {}) {
       return new Promise((resolve) => {
         const child = spawn(process.execPath, [cliBin, ...argv], {
-          env: { ...process.env, BURNERMAIL_CONFIG: join(state.dir, "cli-config.json"), ...env },
+          env: { ...process.env, MAILMINT_CONFIG: join(state.dir, "cli-config.json"), ...env },
         });
         let stdout = "";
         let stderr = "";
@@ -147,7 +147,7 @@ function makeContext(url, state) {
 
 export async function startDev({ vars = {}, label = "dev" } = {}) {
   const port = await freePort();
-  const dir = mkdtempSync(join(tmpdir(), `burnermail-${label}-`));
+  const dir = mkdtempSync(join(tmpdir(), `mailmint-${label}-`));
   const persist = join(dir, "state");
   const migrate = spawnSync(wrangler, ["d1", "migrations", "apply", "DB", "--local", "--persist-to", persist], {
     cwd: workerDir,

@@ -69,7 +69,7 @@ export async function receiveEmail(message: ForwardableEmailMessage, env: Env): 
     env.DB,
     {
       inboxId: inbox.id,
-      rfcMessageId: parsed.messageId ?? `<raw-${fingerprint}@burnermail.invalid>`,
+      rfcMessageId: parsed.messageId ?? `<raw-${fingerprint}@mailmint.invalid>`,
       envelopeFrom: message.from,
       envelopeTo: message.to.toLowerCase(),
       tag: recipient.tag,

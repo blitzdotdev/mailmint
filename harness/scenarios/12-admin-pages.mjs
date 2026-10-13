@@ -16,7 +16,7 @@ export default async function (t) {
   const created = await post("/admin/inboxes", `local=admin-${Date.now()}&domain=aisocket.dev&label=from+ui&ttl_hours=24`);
   assert.equal(created.status, 200);
   const html = await created.text();
-  const url = /http:\/\/127\.0\.0\.1:\d+\/i\/bm_in_[A-Za-z0-9_-]{32}/.exec(html)?.[0];
+  const url = /http:\/\/127\.0\.0\.1:\d+\/i\/mm_in_[A-Za-z0-9_-]{32}/.exec(html)?.[0];
   assert.ok(url, "share link shown");
   const address = /admin-\d+@aisocket\.dev/.exec(html)[0];
 
@@ -25,7 +25,7 @@ export default async function (t) {
   assert.ok(view.includes("121212"));
 
   const relink = await post(`/admin/inbox/${encodeURIComponent(address)}/link`);
-  const newUrl = /http:\/\/127\.0\.0\.1:\d+\/i\/bm_in_[A-Za-z0-9_-]{32}/.exec(await relink.text())?.[0];
+  const newUrl = /http:\/\/127\.0\.0\.1:\d+\/i\/mm_in_[A-Za-z0-9_-]{32}/.exec(await relink.text())?.[0];
   assert.ok(newUrl && newUrl !== url);
   assert.equal((await t.fetch(`${url}/messages`)).status, 401, "old link revoked");
   assert.equal((await t.fetch(`${newUrl}/messages`)).status, 200);

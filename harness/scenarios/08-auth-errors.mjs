@@ -5,11 +5,11 @@ export default async function (t) {
   let r = await t.api("GET", "/v1/inboxes", { key: null });
   assert.equal(r.status, 401);
   assert.equal(r.json.error.code, "unauthorized");
-  r = await t.api("GET", "/v1/inboxes", { key: "bm_key_" + "x".repeat(32) });
+  r = await t.api("GET", "/v1/inboxes", { key: "mm_key_" + "x".repeat(32) });
   assert.equal(r.status, 401);
   r = await t.api("GET", "/v1/inboxes", { key: "garbage" });
   assert.equal(r.status, 401);
-  r = await t.fetch("/i/bm_in_" + "y".repeat(32) + "/messages");
+  r = await t.fetch("/i/mm_in_" + "y".repeat(32) + "/messages");
   assert.equal(r.status, 401);
 
   r = await t.api("POST", "/v1/inboxes", { body: { locale: "x" } });
@@ -37,7 +37,7 @@ export default async function (t) {
     headers: { "content-type": "application/x-www-form-urlencoded", origin: t.url, "sec-fetch-site": "same-origin" },
     body: "name=temp",
   });
-  const temp = /bm_key_[A-Za-z0-9_-]{32}/.exec(await page.text())[0];
+  const temp = /mm_key_[A-Za-z0-9_-]{32}/.exec(await page.text())[0];
   assert.equal((await t.api("GET", "/v1/me", { key: temp })).status, 200);
   const keysHtml = await (await t.fetch("/admin/keys", { headers: { accept: "text/html" } })).text();
   const id = /action="\/admin\/keys\/(\d+)\/revoke" data-confirm="Revoke temp\?"/.exec(keysHtml)?.[1];

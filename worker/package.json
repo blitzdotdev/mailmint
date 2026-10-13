@@ -1,5 +1,5 @@
 {
-  "name": "burnermail-worker",
+  "name": "mailmint-worker",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",

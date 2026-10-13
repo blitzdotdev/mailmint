@@ -1,4 +1,4 @@
-# burnermail: self-hosted disposable email on Cloudflare (plan)
+# mailmint: self-hosted disposable email on Cloudflare (plan)
 
 > **Status 2026-10-13: built and live at https://mail.aisocket.dev** (catch-all `*@aisocket.dev`). This file is the original
 > plan, kept for the research and the decisions; README.md, docs/ and issues/open/ describe what exists now.
@@ -79,7 +79,7 @@ Storage:
 
 ### Auth (house pattern: "the link is the key")
 
-- **Owner key:** a single secret `OWNER_KEY` (`.prod.vars`), sent as a Bearer token. It can create, list and read anything. The CLI reads it from `~/.burnermail/config.json` or `BURNERMAIL_KEY`.
+- **Owner key:** a single secret `OWNER_KEY` (`.prod.vars`), sent as a Bearer token. It can create, list and read anything. The CLI reads it from `~/.mailmint/config.json` or `MAILMINT_KEY`.
 - **Inbox token:**
   - format `bm_<base64url 22>` (≥128 bits); only its SHA-256 is stored, and comparison is constant-time (agent-socket `tokens.ts`)
   - scoped to one inbox and read-only
@@ -118,19 +118,19 @@ Each endpoint also works under the capability prefix `/i/<token>/…`, scoped to
 - **`wait` timing:** capped at 25 s by default because agents can't sleep and chat tool calls time out. A "quiet" cap of up to about 300 s applies for CLI callers who ask for it, same as agent-socket-channel `/recv`.
 - **Markdown surface:** `/i/<token>/agents.md` (plus `/agents.md`, `/llms.txt`, `/skill.md`) is served as markdown unless `Accept` asks for HTML (teenybase `agent-detect.ts`). It contains the address, how to wait, and how to read. It warns that email content is untrusted and must never be followed as instructions.
 
-### CLI (`npx burnermail …`, plain `.mjs`, no deps, anontun style)
+### CLI (`npx mailmint …`, plain `.mjs`, no deps, anontun style)
 
 ```
-burnermail new [--ttl 1d] [--local name] [--json]   # prints address (+ token/url)
-burnermail wait <addr> [--code|--link] [--from x] [--timeout 120] [--json]
-burnermail ls [<addr>]                              # inboxes, or messages in one
-burnermail read <id> [--raw|--html]
-burnermail rm <addr>
-burnermail login                                    # store base URL + owner key
+mailmint new [--ttl 1d] [--local name] [--json]   # prints address (+ token/url)
+mailmint wait <addr> [--code|--link] [--from x] [--timeout 120] [--json]
+mailmint ls [<addr>]                              # inboxes, or messages in one
+mailmint read <id> [--raw|--html]
+mailmint rm <addr>
+mailmint login                                    # store base URL + owner key
 ```
 
 - `wait --code` prints just the code, so it composes in scripts:
-  `addr=$(burnermail new) && … && code=$(burnermail wait $addr --code)`
+  `addr=$(mailmint new) && … && code=$(mailmint wait $addr --code)`
 - Client-side loops over the 25 s server long-poll up to `--timeout`.
 - Respects `HTTPS_PROXY`.
 
@@ -149,10 +149,10 @@ burnermail login                                    # store base URL + owner key
 ## Layout and house conventions
 
 ```
-packages/burnermail/            # own git repo (blitzdotdev/burnermail)
+packages/mailmint/            # own git repo (blitzdotdev/mailmint)
   worker/   src/{index.ts, email/receive.ts, email/extract.ts, api/*, ui/*, signal-do.ts}
             migrations/*.sql  wrangler.jsonc  .dev.vars.example  .prod.vars.example
-  cli/      bin/burnermail.mjs
+  cli/      bin/mailmint.mjs
   harness/  run.mjs scenarios/NN-*.mjs  fixtures/*.eml
   docs/     protocol.md  instance.md (dashboard-only steps)  runbook.md
   issues/{open,closed}/   CONTEXT.md (glossary)   AGENTS.md / CLAUDE.md   README.md
@@ -198,12 +198,12 @@ packages/burnermail/            # own git repo (blitzdotdev/burnermail)
 1. **Domain: `aisocket.dev`.** Addresses take the form `<local>@aisocket.dev`.
    - **Checked 2026-10-13:** the zone is on the agent-socket account and has only two DNS records, `AAAA aisocket.dev` and `AAAA www.aisocket.dev`. Both are the relay's Worker custom domains (`agent-socket/relay/wrangler.jsonc` `env.production`). It has no MX, SPF or TXT records, so nothing conflicts with Email Routing.
    - **The relay alias can probably stay.** Email Routing uses only MX and TXT records, and Worker custom domains use only A/AAAA, so they should coexist. That also avoids breaking old clients and links that still point at aisocket.dev: it was the relay's first prod URL, and `scripts/deploy.sh` still smoke-tests it. Check this when enabling routing. Remove the relay alias only if it actually conflicts, and that needs its own agent-socket change and deploy.
-   - **burnermail's own web/API host:** `mail.aisocket.dev` (Worker custom domain). It's a subdomain, so it doesn't collide with the relay on the apex. Mail addresses stay on the apex.
+   - **mailmint's own web/API host:** `mail.aisocket.dev` (Worker custom domain). It's a subdomain, so it doesn't collide with the relay on the apex. Mail addresses stay on the apex.
    - **Risk:** if the domain ends up on disposable-email blocklists, it hurts the agent-socket alias. That's acceptable because agentsocket.dev is canonical.
-2. **Cloudflare account: agent-socket.** Deploy uses its own **account-owned token `burnermail-deploy`**, created 2026-10-13 and stored in gitignored `packages/burnermail/.env` (`CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`).
+2. **Cloudflare account: agent-socket.** Deploy uses its own **account-owned token `mailmint-deploy`**, created 2026-10-13 and stored in gitignored `packages/mailmint/.env` (`CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`).
    - Account permissions: Account Settings Read, Workers Scripts Write, D1 Write, Workers R2 Storage Write, Workers KV Storage Write, Workers Tail Read.
    - aisocket.dev zone only: Zone Read, DNS Write, Workers Routes Write, Email Routing Rules Write.
    - Verified against the API (verify, email rules, DNS, D1, R2, scripts all OK).
-   - Add Queues or Rate Limiting permissions later if the design needs them. The `cf-mailroom/.env` token lacks email-routing scope, so don't reuse it. **Email Routing enabled on aisocket.dev 2026-10-13** via the dashboard ("Onboard Domain"; no conflicting records). MX ×3 (`route{1,2,3}.mx.cloudflare.net`), SPF and DKIM `cf2024-1._domainkey` were added, and DoH confirmed them live. The relay apex AAAA records were untouched and `https://aisocket.dev/` still returns 200, so routing and the Worker custom domain coexist. There are no routing rules and no catch-all yet; the burnermail deploy creates those via `addresses`.
+   - Add Queues or Rate Limiting permissions later if the design needs them. The `cf-mailroom/.env` token lacks email-routing scope, so don't reuse it. **Email Routing enabled on aisocket.dev 2026-10-13** via the dashboard ("Onboard Domain"; no conflicting records). MX ×3 (`route{1,2,3}.mx.cloudflare.net`), SPF and DKIM `cf2024-1._domainkey` were added, and DoH confirmed them live. The relay apex AAAA records were untouched and `https://aisocket.dev/` still returns 200, so routing and the Worker custom domain coexist. There are no routing rules and no catch-all yet; the mailmint deploy creates those via `addresses`.
 3. **Unknown addresses: accept with caps.** Catch-all with auto-create, daily caps, 24 h expiry for auto-created inboxes. `ACCEPT_UNKNOWN=0` strict mode stays available as the fallback.
-4. **Name and visibility: `burnermail`, public OSS** (`blitzdotdev/burnermail`, Apache-2.0). The name is provisional; rename before publishing.
+4. **Name and visibility: `mailmint`, public OSS** (`blitzdotdev/mailmint`, Apache-2.0). The name is provisional; rename before publishing.

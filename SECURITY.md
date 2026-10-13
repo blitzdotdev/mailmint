@@ -10,7 +10,7 @@ Report vulnerabilities privately via GitHub security advisories on this reposito
 | Share-link holder | Read and delete one inbox |
 | Anyone who knows an address | Send it mail. Nothing else. |
 
-- Keys and share tokens: 192 random bits, prefixed (`bm_key_`, `bm_in_`), stored as SHA-256 only. Failed auth is rate limited per client IP (`AUTH_RL`).
+- Keys and share tokens: 192 random bits, prefixed (`mm_key_`, `mm_in_`), stored as SHA-256 only. Failed auth is rate limited per client IP (`AUTH_RL`).
 - `/admin` and `/authorize` require Cloudflare Access, verified in the Worker too (fails closed if `WEB_ACCESS_*` is unset). `DEV_BYPASS_ACCESS` only works for localhost hosts.
 - Admin state changes require a same-origin request (`Origin` / `Sec-Fetch-Site`).
 - Message HTML is served with `Content-Security-Policy: sandbox` (no `allow-scripts`, no same-origin), `default-src 'none'`, remote images blocked unless requested, and only frameable by our own pages. Attachments are forced downloads.

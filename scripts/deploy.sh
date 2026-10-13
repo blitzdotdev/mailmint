@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# burnermail deploy helper.
+# mailmint deploy helper.
 #   bash scripts/deploy.sh deploy   # check + unit tests + remote D1 migrations + wrangler deploy + catch-all + smoke
 #   bash scripts/deploy.sh smoke    # HTTP smoke test of the live instance
 #   bash scripts/deploy.sh dev      # local wrangler dev on 0.0.0.0:8787
@@ -8,7 +8,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 if [ -f .env ]; then set -a; . ./.env; set +a; fi
-BASE_URL="${BURNERMAIL_URL:-https://mail.aisocket.dev}"
+BASE_URL="${MAILMINT_URL:-https://mail.aisocket.dev}"
 
 need() { [ -n "${!1:-}" ] || { echo "missing $1 (put it in .env)" >&2; exit 1; }; }
 
@@ -24,7 +24,7 @@ smoke() {
   check GET /agents.md 200
   check GET /skill.md 200
   check GET /v1/inboxes 401
-  check GET /i/bm_in_00000000000000000000000000000000/messages 401
+  check GET /i/mm_in_00000000000000000000000000000000/messages 401
   check POST /mcp 401
   check GET /.well-known/oauth-authorization-server 200
   # Access sits in front of /admin: unauthenticated requests are redirected to the login.

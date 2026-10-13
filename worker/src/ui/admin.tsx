@@ -2,7 +2,7 @@ import { Hono, type Context } from "hono";
 import { type AccessIdentity, requireWebAccess } from "../api/access.ts";
 import type { Principal } from "../api/auth.ts";
 import { createInbox, findInbox, findMessage, issueInboxLink, messageAttachment, messageHtml, updateInboxSettings, type CreatedInbox } from "../api/ops.ts";
-import { htmlResponse } from "../api/rest.ts";
+import { htmlResponse, ownerApi } from "../api/rest.ts";
 import { contentDisposition } from "../lib/text.ts";
 import { waitForMessage } from "../api/wait.ts";
 import type { Env } from "../env.ts";
@@ -11,7 +11,7 @@ import { ApiError } from "../lib/errors.ts";
 import { createApiKey, listApiKeys, revokeApiKey } from "../store/api-keys.ts";
 import { deleteInbox, listInboxes, type InboxRow } from "../store/inboxes.ts";
 import { getMessage, listMessages, type MessageRow } from "../store/messages.ts";
-import { CodeChip, Layout, LinkChip, PAGE_HEADERS, relTime } from "./layout.tsx";
+import { AGENT_SOCKET_RELAY, CodeChip, Layout, LinkChip, PAGE_HEADERS, relTime } from "./layout.tsx";
 import { InboxView } from "./views.tsx";
 
 type AdminEnv = { Bindings: Env; Variables: { identity: AccessIdentity } };
@@ -53,6 +53,9 @@ function hours(value: string | undefined): number | null {
   const n = Number(value);
   return value && Number.isFinite(n) && n > 0 ? n : null;
 }
+
+// The REST API for this page's own scripts (agent-socket tools); owner, behind Access + same-origin.
+admin.route("/api", ownerApi);
 
 // ---------- inbox list ----------
 
@@ -299,7 +302,7 @@ async function keysPage(c: Context<AdminEnv>, reveal?: { key: string; name: stri
         <div class="notice">
           <div style="font-weight:600;margin-bottom:6px">Key "{reveal.name}" created. Copy it now; it is shown only once.</div>
           <CodeChip code={reveal.key} />
-          <pre style="margin-top:10px">{`npx burnermail login --url ${origin} --key ${reveal.key}`}</pre>
+          <pre style="margin-top:10px">{`npx mailmint login --url ${origin} --key ${reveal.key}`}</pre>
         </div>
       ) : null}
       <form method="post" action="/admin/keys" class="panel row" style="padding:14px">
@@ -351,18 +354,38 @@ admin.get("/connect", (c) => {
     "Connect",
     <>
       <h1>Connect agents and tools</h1>
+      <h2>Any AI chat (agent-socket)</h2>
+      <div class="panel" style="padding:14px" data-socket data-relay={AGENT_SOCKET_RELAY}>
+        <p style="margin-top:0">
+          For chats without MCP (claude.ai, ChatGPT, …): this tab becomes an{" "}
+          <a href="https://agentsocket.dev" target="_blank" rel="noopener noreferrer">agent-socket</a> app. Paste the link
+          into the chat; it can then create inboxes, wait for codes and links, and read mail, with your access, while
+          this tab stays open.
+        </p>
+        <div class="row">
+          <button type="button" data-start>Create link</button>
+          <button type="button" class="danger" data-stop hidden>Stop</button>
+          <span class="small" data-status>Not connected.</span>
+        </div>
+        <div class="row" data-link-row hidden style="margin-top:12px">
+          <span class="chip linkchip"><span class="mono" data-link></span><button type="button" class="ghost" data-copy-link data-copy="">copy</button></span>
+        </div>
+        <p class="small muted" style="margin-bottom:0">The link is a key: anyone with it can use these tools until you press Stop or close the tab. CLI equivalent: <span class="mono">mailmint connect</span>.</p>
+        <ul data-log></ul>
+      </div>
+      <script type="module" src="/assets/connect.js"></script>
       <h2>CLI</h2>
       <div class="panel" style="padding:14px">
-        <pre style="margin:0">{`npx burnermail login --url ${origin} --key <key from API keys>
-addr=$(npx burnermail new --label "github signup")
-code=$(npx burnermail wait "$addr" --code)`}</pre>
+        <pre style="margin:0">{`npx mailmint login --url ${origin} --key <key from API keys>
+addr=$(npx mailmint new --label "github signup")
+code=$(npx mailmint wait "$addr" --code)`}</pre>
       </div>
       <h2>MCP</h2>
       <div class="panel" style="padding:14px">
         <p style="margin-top:0">Server URL (OAuth; you approve each client here):</p>
         <pre>{`${origin}/mcp`}</pre>
         <p>Claude Code:</p>
-        <pre>{`claude mcp add --transport http burnermail ${origin}/mcp`}</pre>
+        <pre>{`claude mcp add --transport http mailmint ${origin}/mcp`}</pre>
       </div>
       <h2>Any agent</h2>
       <div class="panel" style="padding:14px">

@@ -3,7 +3,7 @@
   // The hosted instance (mail.aisocket.dev, mail on *@aisocket.dev).
   // Self-hosting: change `routes`, MAIL_DOMAINS, the WEB_ACCESS_*
   // values and the resource IDs; see docs/self-host.md.
-  "name": "burnermail",
+  "name": "mailmint",
   "main": "src/index.tsx",
   "compatibility_date": "2026-10-01",
   "compatibility_flags": ["nodejs_compat"],
@@ -14,6 +14,8 @@
   // (*@aisocket.dev → this Worker), set by scripts/catch-all.sh. Wrangler's `addresses`
   // field can manage it instead, but needs account-level Email Routing token permissions.
   "observability": { "enabled": true },
+  // Browser scripts served from /assets/ are imported as text (src/**/*.client.js).
+  "rules": [{ "type": "Text", "globs": ["**/*.client.js"], "fallthrough": true }],
   "keep_vars": false,
   "vars": {
     // Comma-separated mail domains this instance accepts; the first one is the default for new inboxes.
@@ -36,15 +38,15 @@
   },
   "d1_databases": [
     // Inboxes, messages (with extracted codes/links), API keys, daily counters, OAuth consent transactions.
-    { "binding": "DB", "database_name": "burnermail", "database_id": "2bedeaa4-6d21-4862-815f-3e6556c3d592", "migrations_dir": "migrations" }
+    { "binding": "DB", "database_name": "mailmint", "database_id": "a8a8ec10-160c-4161-957e-286bee561719", "migrations_dir": "migrations" }
   ],
   "r2_buckets": [
     // Raw .eml and attachments, keyed raw/<inboxId>/… and att/<inboxId>/… so purge can delete by prefix.
-    { "binding": "RAW", "bucket_name": "burnermail-raw" }
+    { "binding": "RAW", "bucket_name": "mailmint-raw" }
   ],
   "kv_namespaces": [
     // OAuth clients, grants and tokens for the MCP server (@cloudflare/workers-oauth-provider).
-    { "binding": "OAUTH_KV", "id": "abc4311f563a4461b15f673e31f58668" }
+    { "binding": "OAUTH_KV", "id": "9c09d980859a41f4be4b683ba462ba3a" }
   ],
   "durable_objects": {
     // One per address. Only wakes long-polling waiters when mail lands; D1 holds the data.

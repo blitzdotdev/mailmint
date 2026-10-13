@@ -28,7 +28,7 @@ async function ownerKey(url) {
     headers: { "content-type": "application/x-www-form-urlencoded", origin: url, "sec-fetch-site": "same-origin" },
     body: "name=limits",
   });
-  return /bm_key_[A-Za-z0-9_-]{32}/.exec(await res.text())[0];
+  return /mm_key_[A-Za-z0-9_-]{32}/.exec(await res.text())[0];
 }
 
 export default async function (t) {

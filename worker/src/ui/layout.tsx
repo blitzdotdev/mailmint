@@ -29,6 +29,8 @@ button.ghost,.btn.ghost{background:transparent;color:var(--ink);border-color:var
 .viewer{padding:18px}.viewer iframe{width:100%;height:70vh;border:1px solid var(--line);border-radius:8px;background:#fff}
 pre{white-space:pre-wrap;word-break:break-word;font:13px/1.5 var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;max-height:60vh;overflow:auto}
 .empty{padding:40px;text-align:center;color:var(--muted)}
+[data-socket][data-state=live] [data-status]{color:#2f9e44;font-weight:600}
+[data-log]{font:12px/1.6 var(--mono);color:var(--muted);max-height:180px;overflow:auto;margin:10px 0 0;padding-left:18px}
 .live{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}.live:before{content:"";width:8px;height:8px;border-radius:50%;background:#2f9e44;animation:p 1.6s infinite}@keyframes p{50%{opacity:.3}}
 form.inline{display:inline}
 `;
@@ -69,14 +71,14 @@ export function Layout(props: { title: string; nav?: boolean; children: Child })
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <meta name="referrer" content="no-referrer" />
-        <title>{props.title} · burnermail</title>
+        <title>{props.title} · mailmint</title>
         <link rel="stylesheet" href="/assets/app.css" />
         <script src="/assets/app.js" defer></script>
       </head>
       <body>
         <header class="top">
           <a class="brand" href={props.nav ? "/admin" : "/"}>
-            burner<b>mail</b>
+            mail<b>mint</b>
           </a>
           {props.nav ? (
             <nav>
@@ -126,9 +128,12 @@ export function relTime(iso: string | null): string {
   return future ? `in ${v}` : `${v} ago`;
 }
 
+/** agent-socket relay used by "Connect an AI chat" (/admin/connect); also allowed in connect-src. */
+export const AGENT_SOCKET_RELAY = "https://agentsocket.dev";
+
 export const PAGE_HEADERS = {
   "Content-Security-Policy":
-    "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
+    `default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ${AGENT_SOCKET_RELAY} ${AGENT_SOCKET_RELAY.replace(/^https:/, "wss:")}; frame-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'`,
   "Referrer-Policy": "no-referrer",
   "X-Content-Type-Options": "nosniff",
   "Cache-Control": "private, no-store",

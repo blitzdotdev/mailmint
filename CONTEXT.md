@@ -1,4 +1,4 @@
-# burnermail glossary
+# mailmint glossary
 
 **Inbox**: one address (`name@domain`) and its mail. Mail to `name+tag@domain` belongs to the same Inbox.
 _Avoid_: mailbox, account.
@@ -9,9 +9,9 @@ _Avoid_: mailbox, account.
 
 **Owner**: whoever controls the instance: holds an API key, passes Cloudflare Access for `/admin`, or approved an MCP client. Can see every Inbox.
 
-**API key** (`bm_key_…`): owner credential for the REST API and CLI. Shown once; only its SHA-256 is stored.
+**API key** (`mm_key_…`): owner credential for the REST API and CLI. Shown once; only its SHA-256 is stored.
 
-**Share link** (`/i/bm_in_…`): capability URL for exactly one Inbox. The token in it doubles as a Bearer token for that Inbox on `/v1`. Issuing a new one revokes the old.
+**Share link** (`/i/mm_in_…`): capability URL for exactly one Inbox. The token in it doubles as a Bearer token for that Inbox on `/v1`. Issuing a new one revokes the old.
 _Avoid_: public link, magic link (a magic link is something the *mail* contains).
 
 **Tag**: the `+tag` part of the recipient address, recorded on the message and usable as a wait filter.

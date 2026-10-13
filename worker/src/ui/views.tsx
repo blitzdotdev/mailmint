@@ -140,9 +140,9 @@ export function LandingPage(props: { origin: string; domain: string }) {
         accepted; codes and verification links are extracted automatically.
       </p>
       <div class="panel" style="padding:18px;margin-top:18px">
-        <pre style="margin:0">{`npx burnermail login --url ${props.origin} --key <api key>
-addr=$(npx burnermail new)
-code=$(npx burnermail wait "$addr" --code)`}</pre>
+        <pre style="margin:0">{`npx mailmint login --url ${props.origin} --key <api key>
+addr=$(npx mailmint new)
+code=$(npx mailmint wait "$addr" --code)`}</pre>
       </div>
       <p class="small muted" style="margin-top:18px">
         Agents: read <a href="/agents.md">/agents.md</a>. Owner: <a href="/admin">/admin</a>.

@@ -1,28 +1,28 @@
 #!/usr/bin/env node
-// burnermail CLI: disposable inboxes for sign-up testing. Zero dependencies (Node >= 22).
+// mailmint CLI: disposable inboxes for sign-up testing. Zero dependencies (Node >= 22).
 //
-//   burnermail login --url https://mail.example.com --key bm_key_…
-//   addr=$(burnermail new)                      # prints the address
-//   code=$(burnermail wait "$addr" --code)      # blocks until the code arrives, prints it
+//   mailmint login --url https://mail.example.com --key mm_key_…
+//   addr=$(mailmint new)                      # prints the address
+//   code=$(mailmint wait "$addr" --code)      # blocks until the code arrives, prints it
 //
-// An inbox share link (https://host/i/bm_in_…) works anywhere an address does, with no key.
-// Config: ~/.burnermail/config.json, or BURNERMAIL_URL / BURNERMAIL_KEY (env wins).
+// An inbox share link (https://host/i/mm_in_…) works anywhere an address does, with no key.
+// Config: ~/.mailmint/config.json, or MAILMINT_URL / MAILMINT_KEY (env wins).
 
 import { spawnSync } from "node:child_process";
 import { chmodSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
-const HELP = `burnermail: disposable inboxes for sign-up testing
+const HELP = `mailmint: disposable inboxes for sign-up testing
 
 Usage:
-  burnermail login [--url URL] [--key KEY]   Save the instance URL and an API key (from /admin/keys)
-  burnermail whoami                           Show who the key belongs to
-  burnermail new [name] [options]             Create an inbox; prints its address
+  mailmint login [--url URL] [--key KEY]   Save the instance URL and an API key (from /admin/keys)
+  mailmint whoami                           Show who the key belongs to
+  mailmint new [name] [options]             Create an inbox; prints its address
       --ttl 7d|24h|90m    lifetime (plain number = hours; default 7d)
       --label TEXT        note to self
       --domain DOMAIN     mail domain (default: the instance's first)
-  burnermail wait <inbox> [options]           Wait for a message; prints it (or just the code/link)
+  mailmint wait <inbox> [options]           Wait for a message; prints it (or just the code/link)
       --code              only match mail with a verification code; print the code
       --link              only match mail with a verification link; print the link
       --from TEXT         sender address/name contains TEXT
@@ -30,11 +30,14 @@ Usage:
       --tag TAG           mail sent to name+TAG@domain
       --since ID|latest   only messages with id > ID (default 0: any); latest = only new mail
       --timeout 2m        give up after this long (plain number = seconds; default 2m), exit code 2
-  burnermail ls [inbox]                       List inboxes, or the messages in one
-  burnermail read <id> [--text|--html|--raw]  Show a message (default: summary + text)
-  burnermail rm <inbox>                       Delete an inbox and its mail
+  mailmint ls [inbox]                       List inboxes, or the messages in one
+  mailmint read <id> [--text|--html|--raw]  Show a message (default: summary + text)
+  mailmint rm <inbox>                       Delete an inbox and its mail
+  mailmint connect [--relay URL]            Link any AI chat to mailmint via agent-socket: prints an
+                                            agentsocket.dev/…/agents.md link with create/wait/read tools
+                                            (owner access via your API key). Works while this runs.
 
-<inbox> is an address, its name part, or a share link (https://host/i/bm_in_…).
+<inbox> is an address, its name part, or a share link (https://host/i/mm_in_…).
 Global: --json (machine-readable output), --url, --key.
 Exit codes: 0 ok, 1 error, 2 timed out.
 `;
@@ -54,7 +57,7 @@ if ((process.env.HTTPS_PROXY || process.env.https_proxy || process.env.HTTP_PROX
 // ---------- args ----------
 
 const BOOL = new Set(["json", "code", "link", "text", "html", "raw", "help"]);
-const VALUED = new Set(["url", "key", "ttl", "label", "domain", "from", "subject", "tag", "since", "timeout"]);
+const VALUED = new Set(["url", "key", "ttl", "label", "domain", "from", "subject", "tag", "since", "timeout", "relay"]);
 
 function parseArgs(argv) {
   const positional = [];
@@ -66,7 +69,7 @@ function parseArgs(argv) {
     const eq = a.indexOf("=");
     const name = a.slice(2, eq === -1 ? undefined : eq);
     if (BOOL.has(name)) { flags[name] = true; continue; }
-    if (!VALUED.has(name)) fail(`unknown option --${name}. See burnermail --help`);
+    if (!VALUED.has(name)) fail(`unknown option --${name}. See mailmint --help`);
     const value = eq === -1 ? argv[++i] : a.slice(eq + 1);
     if (value === undefined) fail(`--${name} needs a value`);
     flags[name] = value;
@@ -75,7 +78,7 @@ function parseArgs(argv) {
 }
 
 function fail(message, code = 1) {
-  process.stderr.write(`burnermail: ${message}\n`);
+  process.stderr.write(`mailmint: ${message}\n`);
   process.exit(code);
 }
 
@@ -90,7 +93,7 @@ function durationSeconds(value, plainUnit) {
 
 // ---------- config ----------
 
-const CONFIG_PATH = process.env.BURNERMAIL_CONFIG || join(homedir(), ".burnermail", "config.json");
+const CONFIG_PATH = process.env.MAILMINT_CONFIG || join(homedir(), ".mailmint", "config.json");
 
 function readConfig() {
   try {
@@ -102,15 +105,15 @@ function readConfig() {
 
 function settings(flags) {
   const file = readConfig();
-  const url = (flags.url || process.env.BURNERMAIL_URL || file.url || "").replace(/\/+$/, "");
-  const key = flags.key || process.env.BURNERMAIL_KEY || file.key || "";
+  const url = (flags.url || process.env.MAILMINT_URL || file.url || "").replace(/\/+$/, "");
+  const key = flags.key || process.env.MAILMINT_KEY || file.key || "";
   return { url, key };
 }
 
 // ---------- http ----------
 
 async function request(method, url, { key, body, accept = "application/json" } = {}) {
-  const headers = { accept, "user-agent": "burnermail-cli/0.1" };
+  const headers = { accept, "user-agent": "mailmint-cli/0.1" };
   if (key) headers.authorization = `Bearer ${key}`;
   if (body !== undefined) headers["content-type"] = "application/json";
   let res;
@@ -139,13 +142,13 @@ async function request(method, url, { key, body, accept = "application/json" } =
  * anything else goes through /v1 with the API key.
  */
 function target(inbox, s) {
-  const share = /^(https?:\/\/[^/]+)\/i\/(bm_in_[A-Za-z0-9_-]+)\/?/.exec(inbox ?? "");
+  const share = /^(https?:\/\/[^/]+)\/i\/(mm_in_[A-Za-z0-9_-]+)\/?/.exec(inbox ?? "");
   if (share) {
     const base = `${share[1]}/i/${share[2]}`;
     return { key: "", wait: `${base}/wait`, messages: `${base}/messages`, inbox: `${base}/inbox`, del: base, message: (id) => `${base}/messages/${id}` };
   }
-  if (!s.url) fail("no instance configured: run `burnermail login --url … --key …` (or set BURNERMAIL_URL/BURNERMAIL_KEY)");
-  if (!s.key) fail("no API key: run `burnermail login --key …` (or set BURNERMAIL_KEY)");
+  if (!s.url) fail("no instance configured: run `mailmint login --url … --key …` (or set MAILMINT_URL/MAILMINT_KEY)");
+  if (!s.key) fail("no API key: run `mailmint login --key …` (or set MAILMINT_KEY)");
   const enc = encodeURIComponent(inbox);
   const base = `${s.url}/v1/inboxes/${enc}`;
   return { key: s.key, wait: `${base}/wait`, messages: `${base}/messages`, inbox: base, del: base, message: (id) => `${s.url}/v1/messages/${id}` };
@@ -185,7 +188,7 @@ async function whoami(flags) {
 
 async function create(positional, flags) {
   const s = settings(flags);
-  if (!s.url || !s.key) fail("not logged in: run `burnermail login --url … --key …`");
+  if (!s.url || !s.key) fail("not logged in: run `mailmint login --url … --key …`");
   const body = {};
   if (positional[0]) body.local = positional[0];
   if (flags.domain) body.domain = flags.domain;
@@ -198,7 +201,7 @@ async function create(positional, flags) {
 
 async function wait(positional, flags) {
   const inbox = positional[0];
-  if (!inbox) fail("usage: burnermail wait <inbox> [--code|--link]");
+  if (!inbox) fail("usage: mailmint wait <inbox> [--code|--link]");
   if (flags.code && flags.link) fail("use --code or --link, not both");
   const t = target(inbox, settings(flags));
   const deadline = Date.now() + durationSeconds(flags.timeout ?? "2m", 1) * 1000;
@@ -242,7 +245,7 @@ async function list(positional, flags) {
 
 async function read(positional, flags) {
   const id = positional[0];
-  if (!id) fail("usage: burnermail read <id> [--text|--html|--raw]  (or: read <share link> <id>)");
+  if (!id) fail("usage: mailmint read <id> [--text|--html|--raw]  (or: read <share link> <id>)");
   // `read <share link> <id>` reads through the link.
   const viaLink = /^https?:\/\//.test(id);
   const t = target(viaLink ? id : "_", settings(flags));
@@ -265,10 +268,58 @@ async function read(positional, flags) {
 }
 
 async function remove(positional, flags) {
-  if (!positional[0]) fail("usage: burnermail rm <inbox>");
+  if (!positional[0]) fail("usage: mailmint rm <inbox>");
   const t = target(positional[0], settings(flags));
   const r = await request("DELETE", t.del, { key: t.key });
   out(r, flags, `deleted ${r.deleted}`);
+}
+
+async function connectCmd(flags) {
+  const s = settings(flags);
+  if (!s.url || !s.key) fail("not logged in: run `mailmint login --url … --key …`");
+  const { connect } = await import("@agent-socket/sdk");
+  const { APP_ID, agentsMd, buildTools, fetchApi } = await import("./socket-tools.mjs");
+  const api = fetchApi(`${s.url}/v1`, { authorization: `Bearer ${s.key}`, "user-agent": "mailmint-cli/0.1 (agent-socket)" });
+  const log = (line) => process.stderr.write(`${new Date().toISOString().slice(11, 19)} ${line}\n`);
+  const tools = buildTools(api).map((tool) => ({
+    ...tool,
+    handler: async (ctx) => {
+      const result = await tool.handler(ctx);
+      log(`${tool.path}${result?.status >= 400 ? ` → ${result.status}` : ""}`);
+      return result;
+    },
+  }));
+  const relay = (flags.relay || process.env.MAILMINT_RELAY || "https://agentsocket.dev").replace(/\/+$/, "");
+  let session;
+  try {
+    session = await connect({
+      baseUrl: relay,
+      appId: APP_ID,
+      appDescription: "Disposable inboxes: create an address, wait for the verification code or link.",
+      agentsMd: agentsMd(s.url),
+      tools,
+      onSessionChanged: ({ tokensRemapped }) => {
+        for (const [, url] of Object.entries(tokensRemapped ?? {})) log(`relay session was replaced; new link: ${url}`);
+      },
+    });
+  } catch (error) {
+    fail(`could not reach the agent-socket relay at ${relay}: ${error.message}`);
+  }
+  const link = await session.mintAgentToken({ label: "mailmint-cli" });
+  out({ url: link.url, session: session.sessionId }, flags, link.url);
+  if (!flags.json) {
+    process.stderr.write("Paste the link above into an AI chat. It works while this keeps running; Ctrl-C ends it.\n");
+  }
+  const stop = async () => {
+    try {
+      await session.close();
+    } finally {
+      process.exit(0);
+    }
+  };
+  process.on("SIGINT", stop);
+  process.on("SIGTERM", stop);
+  await new Promise(() => {});
 }
 
 // ---------- main ----------
@@ -289,7 +340,8 @@ const commands = {
   ls: () => list(rest, flags),
   read: () => read(rest, flags),
   rm: () => remove(rest, flags),
+  connect: () => connectCmd(flags),
 };
 const run = commands[command];
-if (!run) fail(`unknown command "${command}". See burnermail --help`);
+if (!run) fail(`unknown command "${command}". See mailmint --help`);
 await run();

@@ -1,4 +1,4 @@
-From: burner-demo <no-reply@netlify.com>
+From: mint-demo <no-reply@netlify.com>
 To: alice@aisocket.dev
 Subject: Confirm Your Signup
 Date: Sat, 12 Oct 2026 09:41:07 +0000
@@ -10,5 +10,5 @@ Content-Transfer-Encoding: 7bit
 <h2>Confirm your signup</h2>
 
 <p>Follow this link to confirm your user:</p>
-<p><a href="https://burner-demo.netlify.app/#confirmation_token=jKPY57bB25j8t1GikWKzyf">Confirm your mail</a></p>
+<p><a href="https://mint-demo.netlify.app/#confirmation_token=jKPY57bB25j8t1GikWKzyf">Confirm your mail</a></p>
 

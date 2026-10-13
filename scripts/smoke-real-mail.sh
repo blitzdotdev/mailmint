@@ -4,13 +4,13 @@
 # `wait --code` returns the code. Exercises MX → Email Routing catch-all → email() → D1/R2 → DO wake.
 #
 #   bash scripts/smoke-real-mail.sh setup   # deploy smoke-sender + set its secret (once)
-#   bash scripts/smoke-real-mail.sh         # run the test (needs BURNERMAIL_KEY or a CLI login)
+#   bash scripts/smoke-real-mail.sh         # run the test (needs MAILMINT_KEY or a CLI login)
 #
 # .env: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, SMOKE_SENDER_URL, SMOKE_SECRET (setup writes the last two).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 if [ -f .env ]; then set -a; . ./.env; set +a; fi
-CLI="node cli/bin/burnermail.mjs"
+CLI="node cli/bin/mailmint.mjs"
 
 if [ "${1:-}" = "setup" ]; then
   secret="${SMOKE_SECRET:-$(node -e 'console.log(require("crypto").randomBytes(24).toString("base64url"))')}"
@@ -25,7 +25,7 @@ fi
 
 : "${SMOKE_SENDER_URL:?run: bash scripts/smoke-real-mail.sh setup}"
 : "${SMOKE_SECRET:?run: bash scripts/smoke-real-mail.sh setup}"
-export BURNERMAIL_URL="${BURNERMAIL_URL:-https://mail.aisocket.dev}"
+export MAILMINT_URL="${MAILMINT_URL:-https://mail.aisocket.dev}"
 
 addr=$($CLI new --label "smoke-real-mail $(date -u +%FT%TZ)" --ttl 1h)
 code=$(node -e 'console.log(String(100000 + require("crypto").randomInt(900000)))')

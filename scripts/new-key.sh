@@ -9,7 +9,7 @@ name="${1:?usage: new-key.sh <name>}"
 [[ "$name" =~ ^[A-Za-z0-9._\ -]{1,80}$ ]] || { echo "name: letters, digits, space . _ - only" >&2; exit 2; }
 read -r key hash prefix < <(node -e '
   const c = require("crypto");
-  const key = "bm_key_" + c.randomBytes(24).toString("base64url");
+  const key = "mm_key_" + c.randomBytes(24).toString("base64url");
   console.log(key, c.createHash("sha256").update(key).digest("hex"), key.slice(0, 11));
 ')
 (cd worker && npx wrangler d1 execute DB --remote --command \
