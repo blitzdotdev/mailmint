@@ -1,3 +1,6 @@
+// Inbound mail. Parsing, fingerprinting, R2 layout and the Message-ID fallback are adapted from
+// cf-mailroom (https://github.com/wong2/cf-mailroom, Apache-2.0) src/worker/email/receive.ts + rules.ts.
+
 import PostalMime, { type Address, type Attachment } from "postal-mime";
 import type { Env } from "../env.ts";
 import { extract } from "../extract/index.ts";

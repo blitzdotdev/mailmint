@@ -51,7 +51,7 @@
   },
   "firebase-verify-email.eml": {
     "code": null,
-    "link": "https://mint-demo-4f2a1.firebaseapp.com/__/auth/action?mode=verifyEmail&oobCode=9PIuijmjm4TB0Fy8Gn9HFVc9c3W76C6tOUdO5OetcSkSUibW&apiKey=AIzaSytmcRMHWKicHUORhJvMmZMMtk13AnvGwl9&lang=en",
+    "link": "https://mint-demo-4f2a1.firebaseapp.com/__/auth/action?mode=verifyEmail&oobCode=9PIuijmjm4TB0Fy8Gn9HFVc9c3W76C6tOUdO5OetcSkSUibW&apiKey=AIzaSy-example-key&lang=en",
     "linkKind": "verify"
   },
   "github-device-verification.eml": {
@@ -207,7 +207,7 @@
     "link": null
   },
   "real-notion-signup-code.eml": {
-    "code": "860389",
+    "code": "522957",
     "link": "https://app.notion.com/loginwithemail?state=",
     "linkKind": "magic"
   },
@@ -217,7 +217,7 @@
     "linkKind": "verify"
   },
   "real-perplexity-sign-in.eml": {
-    "code": "000305",
+    "code": "409679",
     "link": "https://www.perplexity.ai/api/auth/callback/email?",
     "linkKind": "magic"
   },

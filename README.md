@@ -16,14 +16,19 @@ Why not sharklasers / mail.tm / 10minutemail? Their domains are on every disposa
 on someone else's server, and none of them give agents a "wait for the code" call. A private domain you own has
 none of those problems.
 
+![The owner dashboard: latest mail across every inbox with the extracted codes and verification links](docs/images/dashboard.png)
+
+![The CLI: create an address, then block until the verification code arrives](docs/images/cli.png)
+
 ## Features
 
 - **Catch-all inboxes.** Any address on your domain receives mail. Addresses nobody created become owner-only
   inboxes that expire 24 h after their last message. Optional strict mode accepts created addresses only.
-- **Code and link extraction** at ingest: a scored extractor that ignores prices, years, phone and order numbers,
-  tested against a corpus of real-world verification emails (GitHub, Google, Microsoft, Slack, Stripe, Clerk,
-  Supabase, Auth0, … plus Chinese, Japanese, German and Spanish mail).
-- **Instant `wait`.** A Durable Object per address wakes waiting requests the moment mail is stored (no polling).
+- **Code and link extraction** at ingest: a scored extractor that ignores prices, years, phone and order numbers.
+  Its test corpus is 47 synthetic emails modelled on common senders (GitHub, Google, Microsoft, Slack, Stripe,
+  Clerk, Supabase, Auth0, … plus Chinese, Japanese, German and Spanish mail) and 5 real, scrubbed sign-up emails
+  (Notion, Substack, Perplexity, claude.ai, Vercel).
+- **Instant `wait`.** A Durable Object per inbox wakes waiting requests the moment mail is stored (no polling).
   Filters: sender, subject, plus-address tag, "has a code", "has a link".
 - **Plus addressing.** `name+github@domain` lands in `name@domain` tagged `github`.
 - **Four ways in**, all over the same operations:
@@ -32,13 +37,15 @@ none of those problems.
   - **Share links**: every created inbox has a capability URL (`/i/<token>`) that reads that one inbox with no
     other credential. It serves a live web page to browsers and an `agents.md` card to agents.
   - **MCP** at `/mcp` with OAuth (you approve each client).
-  - **Any AI chat via [agent-socket](https://agentsocket.dev)**: "Connect an AI chat" on `/admin/connect` (or
+  - **Any AI chat via [agent-socket](https://agentsocket.dev)**: **Create link** on `/admin/connect` (or
     `mailmint connect` in a terminal) prints an `agentsocket.dev/…/agents.md` link. Paste it into claude.ai,
     ChatGPT or any chat that can make HTTP calls, and it gets create/wait/read tools with owner access while the
     tab (or process) runs. No MCP setup needed.
 - **Owner dashboard** at `/admin` (behind Cloudflare Access): every inbox, latest mail with codes, API keys.
 - Sandboxed HTML rendering (no scripts, remote images off by default), attachments, raw `.eml` download.
 - TTLs and an hourly purge; per-inbox, per-day and size caps so a catch-all domain can't be flooded.
+
+![Connect page: one click mints an agent-socket link that any AI chat can use until you press Stop](docs/images/connect.png)
 
 ## How it works
 
@@ -51,7 +58,7 @@ sender ──SMTP──► Cloudflare Email Routing (catch-all *@domain)
                  │        ├──► R2   raw .eml + attachments
                  │        └──► D1   inboxes, messages (+ codes/links), API keys
                  ▼
-          InboxSignal DO (one per address) ── wakes ──► GET …/wait (long-poll)
+          InboxSignal DO (one per inbox) ─── wakes ──► GET …/wait (long-poll)
 
 REST /v1 (API key) ─┐
 /i/<token> (link)  ─┼──► shared operations ──► D1 / R2 / DO
@@ -59,7 +66,13 @@ REST /v1 (API key) ─┐
 /admin (Access)    ─┘
 ```
 
-One Worker, no build step beyond `wrangler`. TypeScript, Hono, hono/jsx server-rendered UI.
+One Worker, deployed with `wrangler`. TypeScript, Hono, hono/jsx server-rendered UI. `npm run build` only
+regenerates the single-file CLI bundle and two vendored browser scripts; they are committed, and `npm test`
+fails if they are stale.
+
+| Inbox (owner view) | Share link (one inbox, no login) |
+|---|---|
+| ![An inbox with the verification code pulled out above the sandboxed HTML mail](docs/images/inbox.png) | ![The share-link page for one inbox](docs/images/share-link.png) |
 
 ## API
 
@@ -84,8 +97,7 @@ Share links expose the same calls under `/i/<token>/…` (`/wait`, `/messages`, 
 
 ## CLI
 
-Zero dependencies, Node 22.21+, one file. Until it's on npm, run it from a checkout (`node cli/bin/mailmint.mjs …`)
-or copy it onto your PATH: `install -m 755 cli/bin/mailmint.mjs ~/.local/bin/mailmint`.
+Zero dependencies, Node 22.21+, one file: `npx mailmint …` or `npm i -g mailmint`.
 
 For Claude Code, `skills/mailmint/SKILL.md` teaches agents the workflow. Copy the folder into
 `~/.claude/skills/`, or in [aibox](https://github.com/blitzdotdev/aibox) run `aibox skill add skills/mailmint`
@@ -101,7 +113,8 @@ mailmint rm <inbox>
 mailmint connect [--relay URL]     # agent-socket link for any AI chat; runs until Ctrl-C
 ```
 
-`<inbox>` can be an address, its name part, or a share link (then no key is needed). `--json` everywhere.
+`<inbox>` can be an address, its name part, or a share link (then no key is needed). `--json` on every command
+(except `read --raw` / `--html`, which print the body itself).
 Exit code 2 means `wait` timed out.
 
 ## Deploy your own

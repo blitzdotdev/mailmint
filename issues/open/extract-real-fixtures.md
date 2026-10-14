@@ -1,7 +1,7 @@
 # Replace synthetic extractor fixtures with real (scrubbed) mail
 
 ## Why this matters
-The 47 fixtures in `worker/tests/fixtures/extract/` were written from knowledge of each service's format, not
+47 of the 52 fixtures in `worker/tests/fixtures/extract/` were written from knowledge of each service's format, not
 captured. Several URL shapes (Vercel, Linear, Figma, Stripe, Cloudflare, PayPal, Docker Hub, OpenAI) are guesses.
 
 ## What to change

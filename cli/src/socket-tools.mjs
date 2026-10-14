@@ -78,7 +78,7 @@ export function buildTools(api) {
     {
       path: "/create_inbox",
       description:
-        "Create a disposable inbox. Optional: local (name part), ttl_hours (default 168), label. Returns { address, url, expires_at }.",
+        "Create a disposable inbox. Optional: local (name part), ttl_hours (default: the instance's DEFAULT_TTL_HOURS, 168 unless configured), label. Returns { address, url, expires_at }.",
       input_schema: { type: "object", properties: { local: str, ttl_hours: { type: "number" }, label: str } },
       handler: wrap((b) => api("POST", "/inboxes", pick(b, ["local", "ttl_hours", "label"]))),
     },

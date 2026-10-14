@@ -14,6 +14,10 @@ export default async function (t) {
     assert.equal(r.status, 200, p);
   }
   assert.match(await (await t.fetch("/skill.md")).text(), /^---\nname: mailmint/);
+  const served = await (await t.fetch("/agents.md")).text();
+  assert.match(served, /Mail to \*\*any\*\*/);
+  assert.match(served, /default 7 days, at most 30 days/);
+  assert.match(served, /expire 24 hours after their latest message/);
   const nf = await t.api("GET", "/nope", { key: null });
   assert.equal(nf.status, 404);
   assert.equal(nf.json.error.code, "not_found");

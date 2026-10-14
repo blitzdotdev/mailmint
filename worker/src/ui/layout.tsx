@@ -3,7 +3,7 @@ import type { Child } from "hono/jsx";
 export const CSS = `
 :root{--bg:#f6f5f2;--panel:#fff;--ink:#1b1b1a;--muted:#6f6d68;--line:#e4e2dc;--accent:#d9480f;--accent-ink:#fff;--chip:#fff4ec;--chip-line:#f6c9ad;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 @media (prefers-color-scheme:dark){:root{--bg:#141413;--panel:#1d1d1b;--ink:#ecebe7;--muted:#9a978f;--line:#2f2e2b;--chip:#2a1d15;--chip-line:#5c3a26}}
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans)}
+*{box-sizing:border-box}[hidden]{display:none!important}html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans)}
 a{color:inherit}a:hover{color:var(--accent)}
 .top{display:flex;align-items:center;gap:16px;padding:14px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
 .brand{font-family:var(--mono);font-weight:700;letter-spacing:-.02em;text-decoration:none}.brand b{color:var(--accent)}

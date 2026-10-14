@@ -67,19 +67,19 @@ app.get("/healthz", (c) => c.json({ ok: true }));
 
 app.get("/", (c) => {
   const origin = new URL(c.req.url).origin;
-  const domains = config(c.env).domains;
-  if (!wantsHtml(c)) return markdown(c, serviceAgentsMd(origin, domains));
-  return html(c, <LandingPage origin={origin} domain={domains[0] ?? ""} />);
+  const cfg = config(c.env);
+  if (!wantsHtml(c)) return markdown(c, serviceAgentsMd(origin, cfg));
+  return html(c, <LandingPage origin={origin} domain={cfg.domains[0] ?? ""} acceptUnknown={cfg.acceptUnknown} />);
 });
 
 for (const path of ["/agents.md", "/llms.txt", "/.well-known/agents.md"]) {
-  app.get(path, (c) => markdown(c, serviceAgentsMd(new URL(c.req.url).origin, config(c.env).domains)));
+  app.get(path, (c) => markdown(c, serviceAgentsMd(new URL(c.req.url).origin, config(c.env))));
 }
 app.get("/skill.md", (c) =>
   markdown(
     c,
     `---\nname: mailmint\ndescription: Create disposable email inboxes and wait for verification codes or links when testing sign-up, login or password-reset flows.\n---\n\n` +
-      serviceAgentsMd(new URL(c.req.url).origin, config(c.env).domains),
+      serviceAgentsMd(new URL(c.req.url).origin, config(c.env)),
   ),
 );
 

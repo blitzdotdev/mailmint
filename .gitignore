@@ -1,4 +1,6 @@
 .env
+.env.*
+!.env.example
 .dev.vars
 .prod.vars
 node_modules/

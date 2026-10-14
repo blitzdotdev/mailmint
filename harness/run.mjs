@@ -198,9 +198,11 @@ async function main() {
   let passed = 0;
   let failed = 0;
   for (const file of files) {
-    const mod = await import(join(here, "scenarios", file));
     const started = Date.now();
+    let mod = {};
     try {
+      // Inside the try: a scenario that fails to load must not skip stopping wrangler dev below.
+      mod = await import(join(here, "scenarios", file));
       await mod.default(t);
       passed++;
       console.log(`  ok   ${file} ${mod.name ?? ""} (${Date.now() - started}ms)`);

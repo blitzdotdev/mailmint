@@ -4,7 +4,7 @@
 > plan, kept for the research and the decisions; README.md, docs/ and issues/open/ describe what exists now.
 > Deviations: the catch-all is set by `scripts/catch-all.sh` (wrangler `addresses` needs account-level permissions,
 > see issues/open/ops-addresses-permission.md); owner dashboard is behind Cloudflare Access; MCP uses OAuth.
-> Name is provisional (rename before publishing).
+> Renamed from the working title "burnermail" to mailmint on 2026-10-13.
 
 ## Goal
 
@@ -206,4 +206,4 @@ packages/mailmint/            # own git repo (blitzdotdev/mailmint)
    - Verified against the API (verify, email rules, DNS, D1, R2, scripts all OK).
    - Add Queues or Rate Limiting permissions later if the design needs them. The `cf-mailroom/.env` token lacks email-routing scope, so don't reuse it. **Email Routing enabled on aisocket.dev 2026-10-13** via the dashboard ("Onboard Domain"; no conflicting records). MX ×3 (`route{1,2,3}.mx.cloudflare.net`), SPF and DKIM `cf2024-1._domainkey` were added, and DoH confirmed them live. The relay apex AAAA records were untouched and `https://aisocket.dev/` still returns 200, so routing and the Worker custom domain coexist. There are no routing rules and no catch-all yet; the mailmint deploy creates those via `addresses`.
 3. **Unknown addresses: accept with caps.** Catch-all with auto-create, daily caps, 24 h expiry for auto-created inboxes. `ACCEPT_UNKNOWN=0` strict mode stays available as the fallback.
-4. **Name and visibility: `mailmint`, public OSS** (`blitzdotdev/mailmint`, Apache-2.0). The name is provisional; rename before publishing.
+4. **Name and visibility: `mailmint`, public OSS** (`blitzdotdev/mailmint`, Apache-2.0). (Renamed from "burnermail" on 2026-10-13.)

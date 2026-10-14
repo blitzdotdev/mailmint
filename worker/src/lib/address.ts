@@ -56,7 +56,7 @@ function pick<T>(list: readonly T[], byte: number): T {
   return list[byte % list.length] as T;
 }
 
-/** `quiet-otter-4k7m`: readable, ~42 bits of randomness. Not a secret (reading needs a token). */
+/** `quiet-otter-4k7m`: readable, 32 bits of randomness. Not a secret (reading needs a token). */
 export function randomLocal(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(6));
   const suffix = Array.from(bytes.slice(2), (b) => pick([...SUFFIX_ALPHABET], b)).join("");

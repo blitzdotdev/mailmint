@@ -38,16 +38,23 @@ const ADDRESS = /[a-z0-9._+-]+@aisocket\.dev/gi;
 // Long random-looking runs (path segments, query values, fragments): ≥ 20 chars mixing
 // letters and digits. Plain words and short numeric codes are left alone.
 const LONG_TOKEN = /[A-Za-z0-9_-]{20,}/g;
+// Shorter hex IDs (open-tracking pixels, message ids): 12+ hex chars mixing letters and digits.
+const HEX_ID = /\b[0-9a-f]{12,}\b/g;
 
 function scrub(text) {
   if (!text) return text;
   return text
     .replace(ADDRESS, "test-inbox@aisocket.dev")
     .replace(/[a-z0-9._+-]+%40aisocket\.dev/gi, "test-inbox%40aisocket.dev")
-    .replace(LONG_TOKEN, (t) => (/\d/.test(t) && /[A-Za-z]/.test(t) ? fake(t) : t));
+    .replace(LONG_TOKEN, (t) => (/\d/.test(t) && /[A-Za-z]/.test(t) ? fake(t) : t))
+    .replace(HEX_ID, (t) => (/\d/.test(t) && /[a-f]/.test(t) ? fake(t) : t));
 }
 
-const from = mail.from?.name ? `${mail.from.name} <${mail.from.address}>` : mail.from?.address ?? "unknown@example.com";
+// Per-recipient sender addresses (`no-reply-<id>@…`) identify the capture too.
+const fromAddress = mail.from?.address
+  ? mail.from.address.replace(/[A-Za-z0-9_]{8,}/g, (t) => (/\d/.test(t) && /[A-Za-z]/.test(t) ? fake(t) : t))
+  : "unknown@example.com";
+const from = mail.from?.name ? `${mail.from.name} <${fromAddress}>` : fromAddress;
 const boundary = `fixture-${createHash("sha1").update(name).digest("hex").slice(0, 12)}`;
 const b64 = (s) => Buffer.from(s, "utf8").toString("base64").replace(/.{76}/g, "$&\r\n");
 const encodedSubject = `=?UTF-8?B?${Buffer.from(mail.subject ?? "", "utf8").toString("base64")}?=`;

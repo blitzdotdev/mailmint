@@ -8,8 +8,7 @@ description: Create disposable email inboxes and wait for verification codes or 
 A private disposable-email service. Any address on its domain receives mail; codes and verification links are
 extracted for you.
 
-Setup check: `mailmint whoami`. If the command is missing, use `npx mailmint` (once published to npm) or
-`node <mailmint repo>/cli/bin/mailmint.mjs`. If it isn't logged in, ask the user for the instance URL and an
+Setup check: `mailmint whoami`. If the command is missing, use `npx mailmint`. If it isn't logged in, ask the user for the instance URL and an
 API key (they create one at `<url>/admin/keys`), then run `mailmint login --url <url> --key <key>`.
 
 ## Sign-up flow

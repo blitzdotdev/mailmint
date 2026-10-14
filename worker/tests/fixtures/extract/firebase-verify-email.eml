@@ -14,7 +14,7 @@ Hello,
 
 Follow this link to verify your email address.
 
-https://mint-demo-4f2a1.firebaseapp.com/__/auth/action?mode=verifyEmail&oobCode=9PIuijmjm4TB0Fy8Gn9HFVc9c3W76C6tOUdO5OetcSkSUibW&apiKey=AIzaSytmcRMHWKicHUORhJvMmZMMtk13AnvGwl9&lang=en
+https://mint-demo-4f2a1.firebaseapp.com/__/auth/action?mode=verifyEmail&oobCode=9PIuijmjm4TB0Fy8Gn9HFVc9c3W76C6tOUdO5OetcSkSUibW&apiKey=AIzaSy-example-key&lang=en
 
 If you didn’t ask to verify this address, you can ignore this email.
 
@@ -31,7 +31,7 @@ Content-Transfer-Encoding: quoted-printable
 <p>Follow this link to verify your email address.</p>
 <p><a href=3D'https://mint-demo-4f2a1.firebaseapp.com/__/auth/action?mode=
 =3DverifyEmail&amp;oobCode=3D9PIuijmjm4TB0Fy8Gn9HFVc9c3W76C6tOUdO5OetcSkSUi=
-bW&amp;apiKey=3DAIzaSytmcRMHWKicHUORhJvMmZMMtk13AnvGwl9&amp;lang=3Den'>http=
+bW&amp;apiKey=3DAIzaSy-example-key&amp;lang=3Den'>http=
 s://mint-demo-4f2a1.firebaseapp.com/__/auth/action?mode=3DverifyEmail&amp=
 ;oobCode=3D9PIuijmjm4TB0Fy8Gn9HFVc9c3W76C6tOUdO5OetcSkSUibW&amp;apiKey=3DAI=
 zaSytmcRMHWKicHUORhJvMmZMMtk13AnvGwl9&amp;lang=3Den</a></p>

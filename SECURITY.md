@@ -14,7 +14,7 @@ Report vulnerabilities privately via GitHub security advisories on this reposito
 - `/admin` and `/authorize` require Cloudflare Access, verified in the Worker too (fails closed if `WEB_ACCESS_*` is unset). `DEV_BYPASS_ACCESS` only works for localhost hosts.
 - Admin state changes require a same-origin request (`Origin` / `Sec-Fetch-Site`).
 - Message HTML is served with `Content-Security-Policy: sandbox` (no `allow-scripts`, no same-origin), `default-src 'none'`, remote images blocked unless requested, and only frameable by our own pages. Attachments are forced downloads.
-- Every response sets `Referrer-Policy: no-referrer` so share-link tokens don't leak through links in mail.
+- Share-link pages, message HTML and the API send `Referrer-Policy: no-referrer`, so share-link tokens don't leak through links in mail. The Access-protected dashboard uses `same-origin` (its form posts need a same-origin `Origin`) and the OAuth consent page `strict-origin`.
 - Mail volume is capped per inbox, per day and per message size; over-cap mail is rejected at SMTP time.
 
 ## Not in scope

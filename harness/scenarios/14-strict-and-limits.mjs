@@ -34,8 +34,14 @@ async function ownerKey(url) {
 export default async function (t) {
   const { assert } = t;
 
-  const strict = await t.state.startDev({ vars: { ACCEPT_UNKNOWN: "0", MAX_MESSAGES_PER_DAY: "3" }, label: "strict" });
+  const strict = await t.state.startDev({ vars: { ACCEPT_UNKNOWN: "0", MAX_MESSAGES_PER_DAY: "3", DEFAULT_TTL_HOURS: "48" }, label: "strict" });
   try {
+    // Served docs describe this instance's config, not the defaults.
+    const docs = await (await fetch(`${strict.url}/agents.md`)).text();
+    assert.match(docs, /accepted only for inboxes created first/);
+    assert.doesNotMatch(docs, /\*\*any\*\*/);
+    assert.match(docs, /default 2 days/);
+    assert.doesNotMatch(docs, /auto-created/);
     // A flood to unknown addresses is rejected without using up the daily quota.
     for (let i = 0; i < 6; i++) {
       const r = await deliver(strict.url, `nobody-made-this-${i}@aisocket.dev`);

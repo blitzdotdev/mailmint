@@ -5,6 +5,7 @@ import { createInbox, findInbox, findMessage } from "../api/ops.ts";
 import { presentInbox, presentMessage, presentMessageSummary } from "../api/present.ts";
 import { waitForMessage } from "../api/wait.ts";
 import type { Env } from "../env.ts";
+import { config } from "../lib/config.ts";
 import { ApiError } from "../lib/errors.ts";
 import { deleteInbox, listInboxes } from "../store/inboxes.ts";
 import { listMessages } from "../store/messages.ts";
@@ -35,7 +36,7 @@ export function createMailmintServer(env: Env, origin: string, identity: McpIden
       inputSchema: z.object({
         local: z.string().max(64).optional().describe("Name part (before @). Random if omitted."),
         domain: z.string().optional().describe("One of the instance's mail domains. Default: the first."),
-        ttl_hours: z.number().positive().optional().describe("Lifetime in hours (default 168)."),
+        ttl_hours: z.number().positive().optional().describe(`Lifetime in hours (default ${config(env).defaultTtlHours}, max ${config(env).maxTtlHours}).`),
         label: z.string().max(120).optional().describe("Note to self, e.g. 'github signup test'."),
       }),
       annotations: { readOnlyHint: false, idempotentHint: false, openWorldHint: false },

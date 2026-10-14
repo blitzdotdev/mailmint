@@ -18,7 +18,13 @@
   "engines": {
     "node": ">=22.21"
   },
-  "homepage": "https://mail.aisocket.dev",
+  "homepage": "https://github.com/blitzdotdev/mailmint#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blitzdotdev/mailmint.git",
+    "directory": "cli"
+  },
+  "bugs": "https://github.com/blitzdotdev/mailmint/issues",
   "keywords": [
     "email",
     "disposable",

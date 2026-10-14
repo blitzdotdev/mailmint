@@ -133,13 +133,18 @@ export function InboxView(props: {
   );
 }
 
-export function LandingPage(props: { origin: string; domain: string }) {
+export function LandingPage(props: { origin: string; domain: string; acceptUnknown: boolean }) {
   return (
     <Layout title="Disposable inboxes">
       <h1>Disposable inboxes for sign-up testing</h1>
       <p class="muted">
-        Private, self-hosted throwaway email on Cloudflare. Mail to any <b class="mono">name@{props.domain}</b> is
-        accepted; codes and verification links are extracted automatically.
+        Private, self-hosted throwaway email on Cloudflare.{" "}
+        {props.acceptUnknown ? (
+          <>Mail to any <b class="mono">name@{props.domain}</b> is accepted;</>
+        ) : (
+          <>Mail to inboxes created on <b class="mono">{props.domain}</b> is accepted;</>
+        )}{" "}
+        codes and verification links are extracted automatically.
       </p>
       <div class="panel" style="padding:18px;margin-top:18px">
         <pre style="margin:0">{`npx mailmint login --url ${props.origin} --key <api key>

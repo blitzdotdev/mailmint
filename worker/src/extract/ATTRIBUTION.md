@@ -53,4 +53,4 @@ SOFTWARE.
 
 ## Test fixtures
 
-`worker/tests/fixtures/extract/*.eml` are synthetic. Each one is written to match the structure, wording and footer of the named service's real email as closely as public knowledge allows. They contain no real personal data: addresses are at `@aisocket.dev` or `example` domains, and tokens are generated.
+`worker/tests/fixtures/extract/real-*.eml` (5) are real verification emails captured from headless sign-ups by `scripts/signup-e2e.mjs`, scrubbed by `scripts/capture-fixture.mjs` (recipient, sender local parts and long tokens replaced). Every other `*.eml` (47) is synthetic: each one is written to match the structure, wording and footer of the named service's real email as closely as public knowledge allows. They contain no real personal data: addresses are at `@aisocket.dev` or `example` domains, and tokens are generated.
