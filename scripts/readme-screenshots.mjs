@@ -115,6 +115,13 @@ async function shot(name, path, { full = false } = {}) {
   console.log(`docs/images/${name}.png  ← ${path}`);
 }
 
+// The landing page: hero + Fig 1, at the size a README shows it.
+await page.setViewportSize({ width: 1280, height: 1330 });
+await page.goto(`${BASE}/`, { waitUntil: "load" });
+await page.waitForTimeout(1500);
+await page.screenshot({ path: join(outDir, "landing.png") });
+await page.setViewportSize({ width: 1200, height: 760 });
+console.log("docs/images/landing.png  ← /");
 await shot("dashboard", "/admin");
 await shot("inbox", `/admin/inbox/${encodeURIComponent(acme.address)}`);
 await shot("share-link", new URL(acme.url).pathname);

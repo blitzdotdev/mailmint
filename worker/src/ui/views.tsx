@@ -2,159 +2,251 @@ import type { Child } from "hono/jsx";
 import type { LinkCandidate } from "../extract/index.ts";
 import type { InboxRow } from "../store/inboxes.ts";
 import { parseJson, type MessageRow, type StoredAttachment } from "../store/messages.ts";
-import { CodeChip, Layout, LinkChip, relTime } from "./layout.tsx";
+import { BrandMark, CodeBadge, CopyButton, EmptyState, Icon, Layout, LiveBadge, relTime } from "./layout.tsx";
 
-export function MessageView(props: { m: MessageRow; base: string; images: boolean }) {
+function sender(m: MessageRow): string {
+  return m.from_name || m.from_address || m.envelope_from || "unknown sender";
+}
+
+/** One row in a message list (mailroom's thread row). `to` shows the address, for lists across inboxes. */
+export function MessageItem(props: { m: MessageRow; href: string; current: boolean; to?: string }) {
+  const { m } = props;
+  const attachments = parseJson<StoredAttachment[]>(m.attachments_json, []).length;
+  return (
+    <a class="item" href={props.href} aria-current={props.current ? "true" : undefined}>
+      <span class="item-top">
+        <span class="item-from truncate">{sender(m)}</span>
+        <span class="item-time">{relTime(m.received_at)}</span>
+      </span>
+      <span class="item-subj truncate">{m.subject || "(no subject)"}</span>
+      {props.to ? <span class="item-to truncate">{props.to}</span> : null}
+      {m.best_code || m.best_link || m.tag || attachments ? (
+        <span class="item-tags">
+          {m.best_code ? <CodeBadge code={m.best_code} /> : null}
+          {m.best_link ? (
+            <span class="xs">
+              <Icon name="link" size="xs" />
+              verification link
+            </span>
+          ) : null}
+          {m.tag ? <span class="badge outline">+{m.tag}</span> : null}
+          {attachments ? (
+            <span class="xs">
+              <Icon name="paperclip" size="xs" />
+              {attachments}
+            </span>
+          ) : null}
+        </span>
+      ) : null}
+    </a>
+  );
+}
+
+/** The reading pane for one message. `back`: the list URL (phones show one pane at a time). */
+export function MessageReader(props: { m: MessageRow; base: string; images: boolean; back: string; selfUrl: string }) {
   const { m, base } = props;
   const codes = parseJson<{ value: string }[]>(m.codes_json, []).map((c) => c.value).filter((c) => c !== m.best_code);
   const links = parseJson<LinkCandidate[]>(m.links_json, []).filter((l) => l.url !== m.best_link).slice(0, 5);
   const attachments = parseJson<StoredAttachment[]>(m.attachments_json, []);
   const hasHtml = m.html_body !== null || m.html_truncated === 1;
+  const join = props.selfUrl.includes("?") ? "&" : "?";
   return (
-    <div class="viewer">
-      <div class="subj" style="font-size:18px;white-space:normal">{m.subject || "(no subject)"}</div>
-      <div class="muted small" style="margin:4px 0 14px">
-        {m.from_name ? `${m.from_name} <${m.from_address}>` : m.from_address ?? m.envelope_from} → {m.envelope_to}
-        {m.tag ? <span> · tag <b class="mono">{m.tag}</b></span> : null} · {relTime(m.received_at)}
-      </div>
-      {m.best_code ? (
-        <div style="margin-bottom:10px">
-          <CodeChip code={m.best_code} big />
+    <section class="reader" aria-label="Message">
+      <header class="reader-head">
+        <a class="btn ghost icon back-link" href={props.back} aria-label="Back to the list">
+          <Icon name="back" />
+        </a>
+        <div class="grow">
+          <h2 class="truncate">{m.subject || "(no subject)"}</h2>
+          <div class="reader-meta">
+            <span class="truncate" style="color:var(--foreground)">
+              {m.from_name ? `${m.from_name} <${m.from_address}>` : m.from_address ?? m.envelope_from}
+            </span>
+          </div>
+          <div class="reader-meta">
+            <span>to</span>
+            <span class="mono truncate">{m.envelope_to}</span>
+            <span aria-hidden="true">·</span>
+            <span class="tnum">{relTime(m.received_at)}</span>
+            {m.tag ? <span class="badge outline">tag {m.tag}</span> : null}
+          </div>
         </div>
-      ) : null}
-      {m.best_link ? (
-        <div style="margin-bottom:10px">
-          <LinkChip url={m.best_link} />
-        </div>
-      ) : null}
-      {codes.length ? <div class="small muted">Other codes: <span class="mono">{codes.join(", ")}</span></div> : null}
-      {links.length ? (
-        <details class="small" style="margin:6px 0">
-          <summary class="muted">Other links ({links.length})</summary>
-          {links.map((l) => (
-            <div class="mono" style="overflow-wrap:anywhere">
-              <a href={l.url} target="_blank" rel="noopener noreferrer">{l.text || l.url}</a> <span class="muted">({l.kind})</span>
+        <a class="btn outline sm" href={`${base}/raw`} title="Download the raw message">
+          <Icon name="download" size="sm" />
+          .eml
+        </a>
+      </header>
+      <div class="reader-body">
+        <div class="reader-inner">
+          {m.best_code || m.best_link ? (
+            <div class="extract">
+              {m.best_code ? (
+                <div>
+                  <span class="extract-label">
+                    <Icon name="hash" size="xs" />
+                    Code
+                  </span>
+                  <span class="code-value grow">{m.best_code}</span>
+                  <CopyButton value={m.best_code} label="Copy" />
+                </div>
+              ) : null}
+              {m.best_link ? (
+                <div>
+                  <span class="extract-label">
+                    <Icon name="link" size="xs" />
+                    Verification link
+                  </span>
+                  <a class="link-value truncate grow" href={m.best_link} target="_blank" rel="noopener noreferrer">
+                    {m.best_link}
+                  </a>
+                  <a class="btn outline sm icon" href={m.best_link} target="_blank" rel="noopener noreferrer" title="Open" aria-label="Open">
+                    <Icon name="external" size="sm" />
+                  </a>
+                  <CopyButton value={m.best_link} />
+                </div>
+              ) : null}
             </div>
-          ))}
-        </details>
-      ) : null}
-      <div class="row small" style="margin:14px 0 10px">
-        {hasHtml ? (
-          props.images ? <a href={`?m=${m.id}`}>Hide remote images</a> : <a href={`?m=${m.id}&images=1`}>Load remote images</a>
-        ) : null}
-        <a href={`${base}/raw`}>Download .eml</a>
-        {attachments.map((a, i) => (
-          <a href={`${base}/attachments/${i}`}>Attachment: {a.filename ?? `attachment-${i}`} ({Math.ceil(a.size / 1024)} KB)</a>
-        ))}
+          ) : null}
+          {codes.length || links.length ? (
+            <details class="more">
+              <summary>
+                Other candidates ({codes.length + links.length})
+              </summary>
+              <div class="more-list">
+                {codes.length ? (
+                  <div>
+                    <span class="muted">Codes: </span>
+                    <span class="mono">{codes.join(", ")}</span>
+                  </div>
+                ) : null}
+                {links.map((l) => (
+                  <div class="hstack" style="align-items:baseline">
+                    <a href={l.url} target="_blank" rel="noopener noreferrer">{l.text || l.url}</a>
+                    <span class="muted xs">{l.kind}</span>
+                  </div>
+                ))}
+              </div>
+            </details>
+          ) : null}
+          {hasHtml || attachments.length ? (
+            <div class="toolbar">
+              {hasHtml ? (
+                <a class="btn ghost xs muted-text" href={props.images ? props.selfUrl : `${props.selfUrl}${join}images=1`}>
+                  <Icon name="image" size="xs" />
+                  {props.images ? "Hide remote images" : "Load remote images"}
+                </a>
+              ) : null}
+              {attachments.map((a, i) => (
+                <a class="btn outline xs" href={`${base}/attachments/${i}`}>
+                  <Icon name="paperclip" size="xs" />
+                  {a.filename ?? `attachment-${i}`}
+                  <span class="muted">{Math.ceil(a.size / 1024)} KB</span>
+                </a>
+              ))}
+            </div>
+          ) : null}
+          <div class="mail-frame">
+            {hasHtml ? (
+              <iframe
+                src={`${base}/html${props.images ? "?images=1" : ""}`}
+                sandbox="allow-popups allow-popups-to-escape-sandbox"
+                referrerpolicy="no-referrer"
+                title="Message HTML"
+              ></iframe>
+            ) : (
+              <pre>{m.text_body ?? ""}</pre>
+            )}
+          </div>
+          {hasHtml && m.text_body ? (
+            <details class="more">
+              <summary>Plain text</summary>
+              <pre>{m.text_body}</pre>
+            </details>
+          ) : null}
+        </div>
       </div>
-      {hasHtml ? (
-        <iframe
-          src={`${base}/html${props.images ? "?images=1" : ""}`}
-          sandbox="allow-popups allow-popups-to-escape-sandbox"
-          referrerpolicy="no-referrer"
-          title="Message HTML"
-        ></iframe>
-      ) : (
-        <pre>{m.text_body ?? ""}</pre>
-      )}
-      {hasHtml && m.text_body ? (
-        <details style="margin-top:10px">
-          <summary class="small muted">Plain text</summary>
-          <pre>{m.text_body}</pre>
-        </details>
-      ) : null}
-    </div>
+    </section>
   );
 }
 
-export function InboxView(props: {
+/**
+ * List + reader for one inbox (owner view and share link). `head` fills the list header.
+ * `explicit`: a message was picked (?m=…), so phones show the reader instead of the list.
+ */
+export function InboxPanes(props: {
   inbox: InboxRow;
   messages: MessageRow[];
   selected: MessageRow | null;
+  explicit: boolean;
+  listUrl: string;
   messageBase: (id: number) => string;
-  waitUrl: string;
-  /** Where live updates go when mail arrives (default: reload this URL). */
-  nextUrl?: string;
   images: boolean;
-  header?: Child;
+  head: Child;
 }) {
   const { inbox, messages, selected } = props;
+  const href = (id: number) => `${props.listUrl}?m=${id}`;
   return (
-    <>
-      <div class="row" style="justify-content:space-between">
-        <div>
-          <h1 class="mono">
-            {inbox.address}{" "}
-            <button type="button" class="ghost small" data-copy={inbox.address}>copy</button>
-          </h1>
-          <div class="muted small">
-            {inbox.label ? <b>{inbox.label} · </b> : null}
-            {inbox.origin === "auto" ? "catch-all inbox" : "inbox"} · {inbox.message_count} messages · expires{" "}
-            {relTime(inbox.expires_at)}
-          </div>
+    <main class="main" data-view={props.explicit && selected ? "reader" : "list"}>
+      <section class="list" aria-label="Messages">
+        <div class="list-head">{props.head}</div>
+        <div class="list-body">
+          {messages.length === 0 ? (
+            <div class="list-empty">No mail yet.</div>
+          ) : (
+            messages.map((m) => <MessageItem m={m} href={href(m.id)} current={selected?.id === m.id} />)
+          )}
         </div>
-        <span class="live" data-wait={props.waitUrl} data-next={props.nextUrl}>waiting for mail</span>
-      </div>
-      {props.header}
-      {messages.length === 0 ? (
-        <div class="panel empty" style="margin-top:16px">
-          No mail yet. Send something to <b class="mono">{inbox.address}</b>; it shows up here instantly.
-        </div>
+      </section>
+      {selected ? (
+        <MessageReader
+          m={selected}
+          base={props.messageBase(selected.id)}
+          images={props.images}
+          back={props.listUrl}
+          selfUrl={href(selected.id)}
+        />
       ) : (
-        <div class="split" style="margin-top:16px">
-          <div class="panel msglist">
-            {messages.map((m) => (
-              <a href={`?m=${m.id}`} class={selected?.id === m.id ? "sel" : ""}>
-                <div class="row" style="justify-content:space-between;gap:6px">
-                  <span class="small muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%">
-                    {m.from_name || m.from_address || m.envelope_from}
-                  </span>
-                  <span class="small muted">{relTime(m.received_at)}</span>
-                </div>
-                <div class="subj">{m.subject || "(no subject)"}</div>
-                <div class="row small" style="gap:6px;margin-top:2px">
-                  {m.best_code ? <span class="chip" style="padding:0 6px">{m.best_code}</span> : null}
-                  {m.best_link ? <span class="muted">link ↗</span> : null}
-                  {m.tag ? <span class="muted mono">+{m.tag}</span> : null}
-                </div>
-              </a>
-            ))}
-          </div>
-          <div class="panel">
-            {selected ? (
-              <MessageView m={selected} base={props.messageBase(selected.id)} images={props.images} />
-            ) : (
-              <div class="empty">Select a message</div>
+        <section class="reader">
+          <EmptyState icon="inbox" title={messages.length ? "Select a message" : "Waiting for mail"}>
+            {messages.length ? null : (
+              <>
+                Send anything to <span class="mono">{inbox.address}</span>. It shows up here the moment it lands, with
+                the code and link pulled out.
+              </>
             )}
-          </div>
-        </div>
+          </EmptyState>
+        </section>
       )}
-    </>
+    </main>
   );
 }
 
-export function LandingPage(props: { origin: string; domain: string; acceptUnknown: boolean }) {
+/** Header block for an inbox's message list: address, copy, live state, meta, optional actions. */
+export function InboxHead(props: { inbox: InboxRow; waitUrl: string; nextUrl?: string; actions?: Child; note?: Child }) {
+  const { inbox } = props;
   return (
-    <Layout title="Disposable inboxes">
-      <h1>Disposable inboxes for sign-up testing</h1>
-      <p class="muted">
-        Private, self-hosted throwaway email on Cloudflare.{" "}
-        {props.acceptUnknown ? (
-          <>Mail to any <b class="mono">name@{props.domain}</b> is accepted;</>
-        ) : (
-          <>Mail to inboxes created on <b class="mono">{props.domain}</b> is accepted;</>
-        )}{" "}
-        codes and verification links are extracted automatically.
-      </p>
-      <div class="panel" style="padding:18px;margin-top:18px">
-        <pre style="margin:0">{`npx mailmint login --url ${props.origin} --key <api key>
-addr=$(npx mailmint new)
-code=$(npx mailmint wait "$addr" --code)`}</pre>
+    <>
+      <div class="list-title">
+        <h1 class="mono truncate grow" style="font-size:14px" title={inbox.address}>
+          {inbox.address}
+        </h1>
+        <CopyButton value={inbox.address} size="xs" variant="ghost" title="Copy address" />
+        <LiveBadge url={props.waitUrl} next={props.nextUrl} label="Live" />
       </div>
-      <p class="small muted" style="margin-top:18px">
-        Agents: read <a href="/agents.md">/agents.md</a>. Owner: <a href="/admin">/admin</a>.
-      </p>
-    </Layout>
+      {inbox.label ? <p class="truncate" style="font-size:13px;font-weight:500;margin-top:-4px">{inbox.label}</p> : null}
+      <div class="list-meta">
+        <span>{inbox.origin === "auto" ? "Catch-all" : "Created"}</span>
+        <span aria-hidden="true">·</span>
+        <span class="tnum">{inbox.message_count} {inbox.message_count === 1 ? "message" : "messages"}</span>
+        <span aria-hidden="true">·</span>
+        <span class="hstack" style="gap:4px">
+          <Icon name="clock" size="xs" />
+          expires {relTime(inbox.expires_at)}
+        </span>
+      </div>
+      {props.note}
+      {props.actions}
+    </>
   );
 }
 
@@ -162,6 +254,7 @@ export function CapabilityPage(props: {
   inbox: InboxRow;
   messages: MessageRow[];
   selected: MessageRow | null;
+  explicit: boolean;
   token: string;
   images: boolean;
 }) {
@@ -169,19 +262,38 @@ export function CapabilityPage(props: {
   const maxId = props.messages[0]?.id ?? 0;
   return (
     <Layout title={props.inbox.address}>
-      <InboxView
-        inbox={props.inbox}
-        messages={props.messages}
-        selected={props.selected}
-        messageBase={(id) => `${base}/messages/${id}`}
-        waitUrl={`${base}/wait?since=${maxId}&timeout=55`}
-        images={props.images}
-        header={
-          <p class="small muted">
-            This page's URL is the key to this inbox. Agents: <a href={`${base}/agents.md`}>agents.md</a>.
-          </p>
-        }
-      />
+      <div class="share-shell">
+        <header class="share-bar">
+          <span class="brand">
+            <BrandMark />
+            mailmint
+          </span>
+          <span class="badge secondary">
+            <Icon name="share" size="xs" />
+            Shared inbox
+          </span>
+          <a class="btn ghost sm muted-text" href={`${base}/agents.md`} style="margin-left:auto">
+            <Icon name="book" size="sm" />
+            agents.md
+          </a>
+        </header>
+        <InboxPanes
+          inbox={props.inbox}
+          messages={props.messages}
+          selected={props.selected}
+          explicit={props.explicit}
+          listUrl={base}
+          messageBase={(id) => `${base}/messages/${id}`}
+          images={props.images}
+          head={
+            <InboxHead
+              inbox={props.inbox}
+              waitUrl={`${base}/wait?since=${maxId}&timeout=55`}
+              note={<p class="xs muted">This page's URL is the key to this inbox: anyone with it can read the mail.</p>}
+            />
+          }
+        />
+      </div>
     </Layout>
   );
 }

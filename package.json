@@ -9,10 +9,10 @@
   ],
   "scripts": {
     "check": "npm run check -w worker",
-    "test": "node scripts/build.mjs --check && npm test -w worker && npm test -w cli",
+    "test": "node scripts/build.mjs --check && node landing/build.mjs --check && npm test -w worker && npm test -w cli",
     "harness": "node harness/run.mjs",
     "deploy": "bash scripts/deploy.sh deploy",
-    "build": "node scripts/build.mjs"
+    "build": "node scripts/build.mjs && node landing/build.mjs"
   },
   "engines": {
     "node": ">=22"

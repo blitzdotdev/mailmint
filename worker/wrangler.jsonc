@@ -14,8 +14,11 @@
   // (*@aisocket.dev → this Worker), set by scripts/catch-all.sh. Wrangler's `addresses`
   // field can manage it instead, but needs account-level Email Routing token permissions.
   "observability": { "enabled": true },
-  // Browser scripts served from /assets/ are imported as text (src/**/*.client.js).
-  "rules": [{ "type": "Text", "globs": ["**/*.client.js"], "fallthrough": true }],
+  // Browser scripts served from /assets/ are imported as text (src/**/*.client.js), fonts as bytes.
+  "rules": [
+    { "type": "Text", "globs": ["**/*.client.js"], "fallthrough": true },
+    { "type": "Data", "globs": ["**/*.woff2"], "fallthrough": true }
+  ],
   "keep_vars": false,
   "vars": {
     // Comma-separated mail domains this instance accepts; the first one is the default for new inboxes.

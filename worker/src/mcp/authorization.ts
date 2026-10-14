@@ -189,7 +189,7 @@ function consentPage(
   return htmlPage(
     "Authorize mailmint",
     `<header>
-      <div class="mark" aria-hidden="true">AI</div>
+      <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="3.5" width="22" height="17" rx="5" fill="currentColor"/><path d="M5 8.2 12 13l7-4.8" fill="none" stroke="var(--card)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18.6" cy="16.2" r="2.4" fill="var(--mint)"/></svg>
       <div><h1>Authorize ${escapeHtml(clientName)}</h1><p>Connect this client to mailmint.</p></div>
     </header>
     <section class="client">
@@ -271,7 +271,10 @@ function htmlPage(
   return new Response(`<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${escapeHtml(title)}</title><style>
-:root{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#18181b;background:#f4f4f5}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px}.card{width:min(520px,100%);background:#fff;border:1px solid #d4d4d8;border-radius:16px;padding:28px;box-shadow:0 8px 30px rgba(24,24,27,.08)}header{display:flex;gap:14px;align-items:flex-start;margin-bottom:24px}.mark{display:grid;place-items:center;width:42px;height:42px;border-radius:10px;background:#18181b;color:#fff;font-size:13px;font-weight:700}h1{font-size:22px;line-height:1.25;margin:1px 0 5px}h2{font-size:14px;margin:24px 0 10px}p{margin:0;color:#71717a;line-height:1.5}.client{display:grid;grid-template-columns:auto 1fr;gap:7px 16px;padding:14px 0;border-block:1px solid #e4e4e7;font-size:14px}.client span{color:#71717a}.client strong{overflow-wrap:anywhere}ul{list-style:none;padding:0;margin:0;border:1px solid #e4e4e7;border-radius:10px}li{display:flex;flex-direction:column;gap:3px;padding:13px 14px}li+li{border-top:1px solid #e4e4e7}li span{color:#71717a;font-size:14px}.notice{font-size:13px;margin-top:14px}form{display:flex;justify-content:flex-end;gap:10px;margin-top:26px}button{border:1px solid #18181b;border-radius:9px;background:#18181b;color:#fff;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer}.secondary{background:#fff;color:#18181b;border-color:#d4d4d8}button:focus-visible{outline:3px solid #a1a1aa;outline-offset:2px}
+@font-face{font-family:Geist;src:url(/assets/fonts/geist.woff2) format("woff2");font-weight:100 900;font-display:swap}
+:root{--bg:oklch(0.984 0.002 265);--card:#fff;--fg:oklch(0.2 0.012 265);--muted:oklch(0.51 0.017 265);--border:oklch(0.918 0.005 265);--input:oklch(0.89 0.007 265);--primary:oklch(0.22 0.014 265);--mint:#0d9373;font-family:Geist,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--fg);background:var(--bg);-webkit-font-smoothing:antialiased;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:oklch(0.17 0 0);--card:oklch(0.205 0 0);--fg:oklch(0.985 0 0);--muted:oklch(0.708 0 0);--border:oklch(1 0 0/10%);--input:oklch(1 0 0/15%);--primary:oklch(0.922 0 0);--mint:#34c39b;color-scheme:dark}}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;font-size:14px}.card{width:min(480px,100%);background:var(--card);border-radius:14px;padding:24px;box-shadow:0 0 0 1px var(--border),0 4px 16px -6px oklch(0.2 0.012 265/0.1)}header{display:flex;gap:12px;align-items:center;margin-bottom:20px}.mark{width:36px;height:36px;flex-shrink:0;color:var(--fg)}h1{font-size:17px;line-height:1.3;margin:0 0 2px;font-weight:600;letter-spacing:-.015em}h2{font-size:13px;font-weight:600;margin:20px 0 8px}p{margin:0;color:var(--muted);line-height:1.5}.client{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;padding:12px 0;border-block:1px solid var(--border);font-size:13px}.client span{color:var(--muted)}.client strong{font-weight:500;overflow-wrap:anywhere}ul{list-style:none;padding:0;margin:0;border:1px solid var(--border);border-radius:10px}li{display:flex;flex-direction:column;gap:2px;padding:11px 13px}li+li{border-top:1px solid var(--border)}li strong{font-weight:500}li span{color:var(--muted);font-size:13px}.notice{font-size:12.5px;margin-top:12px}form{display:flex;justify-content:flex-end;gap:8px;margin-top:22px}button{height:34px;border:1px solid transparent;border-radius:8px;background:var(--primary);color:var(--card);padding:0 14px;font:inherit;font-size:13px;font-weight:500;cursor:pointer}.secondary{background:var(--card);color:var(--fg);border-color:var(--border)}button:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in oklch,var(--muted) 40%,transparent)}
 </style></head><body><main class="card">${body}</main></body></html>`, {
     status,
     headers: {
@@ -281,7 +284,7 @@ function htmlPage(
       // Do not set form-action here. Browsers apply it to the full form
       // navigation redirect chain, which would block the OAuth provider's
       // already-validated cross-origin client callback after approval.
-      "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'; img-src 'none'; script-src 'none'",
+      "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; img-src 'none'; script-src 'none'",
       "Referrer-Policy": "strict-origin",
       "X-Content-Type-Options": "nosniff",
       "X-Frame-Options": "DENY",

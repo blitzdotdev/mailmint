@@ -1,3 +1,4 @@
+import type { Child } from "hono/jsx";
 import { Hono, type Context } from "hono";
 import { type AccessIdentity, requireWebAccess } from "../api/access.ts";
 import type { Principal } from "../api/auth.ts";
@@ -6,15 +7,16 @@ import { htmlResponse, ownerApi } from "../api/rest.ts";
 import { contentDisposition } from "../lib/text.ts";
 import { waitForMessage } from "../api/wait.ts";
 import type { Env } from "../env.ts";
-import { config } from "../lib/config.ts";
+import { config, type Config } from "../lib/config.ts";
 import { ApiError } from "../lib/errors.ts";
 import { createApiKey, listApiKeys, revokeApiKey } from "../store/api-keys.ts";
 import { deleteInbox, listInboxes, type InboxRow } from "../store/inboxes.ts";
 import { getMessage, listMessages, type MessageRow } from "../store/messages.ts";
-import { AGENT_SOCKET_RELAY, CodeChip, Layout, LinkChip, PAGE_HEADERS, relTime } from "./layout.tsx";
-import { InboxView } from "./views.tsx";
+import { AGENT_SOCKET_RELAY, BrandMark, CopyButton, EmptyState, Head, Icon, LiveBadge, PAGE_HEADERS, SecretRow, relTime, type IconName } from "./layout.tsx";
+import { InboxHead, InboxPanes, MessageItem, MessageReader } from "./views.tsx";
 
 type AdminEnv = { Bindings: Env; Variables: { identity: AccessIdentity } };
+type AdminContext = Context<AdminEnv>;
 const OWNER: Principal = { kind: "owner", name: "admin" };
 
 export const admin = new Hono<AdminEnv>();
@@ -44,11 +46,116 @@ admin.use("*", async (c, next) => {
   if (!c.res.headers.has("Referrer-Policy")) c.res.headers.set("Referrer-Policy", "same-origin");
 });
 
-function page(c: Context<AdminEnv>, title: string, body: unknown, status: 200 | 201 | 400 | 404 = 200) {
-  return c.html(<Layout title={title} nav>{body as never}</Layout>, status);
+// ---------- shell: sidebar | content (mailroom layout) ----------
+
+type Active = { kind: "all" } | { kind: "inbox"; address: string } | { kind: "new" } | { kind: "keys" } | { kind: "connect" } | { kind: "none" };
+
+function NavItem(props: { href: string; icon: IconName; label: string; current: boolean; count?: number }) {
+  return (
+    <a class="sb-item" href={props.href} aria-current={props.current ? "page" : undefined}>
+      <Icon name={props.icon} />
+      <span class="truncate grow">{props.label}</span>
+      {props.count ? <span class="count">{props.count}</span> : null}
+    </a>
+  );
 }
 
-async function form(c: Context<AdminEnv>): Promise<Record<string, string>> {
+function Shell(props: { inboxes: InboxRow[]; active: Active; q: string; children: Child }) {
+  const { active } = props;
+  return (
+    <div class="app">
+      <aside class="sidebar">
+        <div class="sb-head">
+          <a class="brand" href="/admin">
+            <BrandMark />
+            mailmint
+          </a>
+        </div>
+        <div class="sb-new">
+          <a class="btn outline" href="/admin/new" aria-current={active.kind === "new" ? "page" : undefined}>
+            <Icon name="plus" />
+            New inbox
+          </a>
+        </div>
+        <form class="sb-search" method="get" action="/admin" role="search">
+          <div class="search">
+            <Icon name="search" />
+            <input class="input" name="q" value={props.q} placeholder="Find an inbox" aria-label="Find an inbox" />
+          </div>
+        </form>
+        <nav class="sb-nav" aria-label="Mail">
+          <NavItem href="/admin" icon="inbox" label="All mail" current={active.kind === "all"} />
+          <p class="sb-label">{props.q ? `Inboxes matching “${props.q}”` : "Inboxes"}</p>
+          {props.inboxes.length ? (
+            <div class="sb-group" role="group" aria-label="Inboxes">
+              {props.inboxes.map((i) => (
+                <a
+                  class="sb-item addr"
+                  href={`/admin/inbox/${encodeURIComponent(i.address)}`}
+                  title={i.label ? `${i.address} (${i.label})` : i.address}
+                  aria-current={active.kind === "inbox" && active.address === i.address ? "page" : undefined}
+                >
+                  <span class="truncate grow">{i.address.split("@")[0]}</span>
+                  {i.message_count ? <span class="count">{i.message_count}</span> : null}
+                </a>
+              ))}
+            </div>
+          ) : (
+            <p class="sb-empty">{props.q ? "No matches." : "None yet."}</p>
+          )}
+        </nav>
+        <div class="sb-foot">
+          <NavItem href="/admin/keys" icon="key" label="API keys" current={active.kind === "keys"} />
+          <NavItem href="/admin/connect" icon="plug" label="Connect" current={active.kind === "connect"} />
+          <NavItem href="/agents.md" icon="book" label="agents.md" current={false} />
+        </div>
+      </aside>
+      <header class="mobile-bar">
+        <a class="brand" href="/admin">
+          <BrandMark />
+          mailmint
+        </a>
+        <a class="btn ghost icon" href="/admin/new" aria-label="New inbox"><Icon name="plus" /></a>
+        <a class="btn ghost icon" href="/admin/keys" aria-label="API keys"><Icon name="key" /></a>
+        <a class="btn ghost icon" href="/admin/connect" aria-label="Connect"><Icon name="plug" /></a>
+      </header>
+      {props.children}
+    </div>
+  );
+}
+
+async function page(c: AdminContext, title: string, active: Active, body: Child, status: 200 | 400 | 404 = 200) {
+  const q = c.req.query("q") ?? "";
+  const inboxes = await listInboxes(c.env.DB, { limit: 200, query: q || null });
+  return c.html(
+    <html lang="en">
+      <Head title={title} />
+      <body>
+        <Shell inboxes={inboxes} active={active} q={q}>
+          {body}
+        </Shell>
+      </body>
+    </html>,
+    status,
+  );
+}
+
+/** Settings-style page body (keys, connect, new inbox). */
+function Page(props: { title: string; desc?: Child; children: Child }) {
+  return (
+    <main class="page">
+      <div class="page-inner">
+        <div class="page-head">
+          <h1>{props.title}</h1>
+          {props.desc ? <p>{props.desc}</p> : null}
+        </div>
+        {props.children}
+      </div>
+    </main>
+  );
+}
+
+async function form(c: AdminContext): Promise<Record<string, string>> {
   const data = await c.req.parseBody();
   const out: Record<string, string> = {};
   for (const [k, v] of Object.entries(data)) if (typeof v === "string") out[k] = v;
@@ -60,94 +167,144 @@ function hours(value: string | undefined): number | null {
   return value && Number.isFinite(n) && n > 0 ? n : null;
 }
 
+function ttlLabel(h: number): string {
+  return h % 24 === 0 ? `${h / 24} ${h === 24 ? "day" : "days"}` : `${h} ${h === 1 ? "hour" : "hours"}`;
+}
+
 // The REST API for this page's own scripts (agent-socket tools); owner, behind Access + same-origin.
 admin.route("/api", ownerApi);
 
-// ---------- inbox list ----------
+// ---------- new inbox form ----------
+
+function NewInboxForm(props: { cfg: Config }) {
+  const { cfg } = props;
+  const ttls = [...new Set([1, 24, cfg.defaultTtlHours, cfg.maxTtlHours])].filter((h) => h <= cfg.maxTtlHours).sort((a, b) => a - b);
+  return (
+    <form method="post" action="/admin/inboxes" class="card">
+      <div class="card-body vstack" style="gap:14px">
+        <div class="grid-form">
+          <div class="field">
+            <label for="nf-local">Address</label>
+            <input id="nf-local" class="input mono" name="local" placeholder="blank = random, e.g. quiet-otter-4k7m" autocomplete="off" />
+          </div>
+          <span class="at">@</span>
+          <div class="field">
+            <label for="nf-domain">Domain</label>
+            <select id="nf-domain" class="select" name="domain">{cfg.domains.map((d) => <option>{d}</option>)}</select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="nf-label">Label</label>
+            <input id="nf-label" class="input" name="label" placeholder="optional, e.g. github signup test" />
+          </div>
+          <div class="field" style="flex:0 0 150px;min-width:0">
+            <label for="nf-ttl">Keep for</label>
+            <select id="nf-ttl" class="select" name="ttl_hours">
+              {ttls.map((h) => <option value={String(h)} selected={h === cfg.defaultTtlHours}>{ttlLabel(h)}</option>)}
+            </select>
+          </div>
+          <button class="btn">
+            <Icon name="plus" />
+            Create inbox
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+function DomainNote(props: { cfg: Config }) {
+  const domains = props.cfg.domains.map((d) => `*@${d}`).join(", ");
+  return props.cfg.acceptUnknown ? (
+    <>Mail to any <span class="mono">{domains}</span> is accepted; addresses nobody created become catch-all inboxes that expire {ttlLabel(props.cfg.autoTtlHours)} after their last message.</>
+  ) : (
+    <>Strict mode: only inboxes created here or through the API accept mail ({domains}).</>
+  );
+}
+
+admin.get("/new", (c) => {
+  const cfg = config(c.env);
+  return page(
+    c,
+    "New inbox",
+    { kind: "new" },
+    <Page title="New inbox" desc={<DomainNote cfg={cfg} />}>
+      <NewInboxForm cfg={cfg} />
+      <p class="xs muted">
+        Each created inbox gets a share link that reads just that inbox, without a login. It is shown once, on the next page.
+      </p>
+    </Page>,
+  );
+});
+
+// ---------- all mail ----------
 
 interface LatestRow extends MessageRow {
   address: string;
 }
 
 admin.get("/", async (c) => {
-  const q = c.req.query("q") ?? "";
-  const inboxes = await listInboxes(c.env.DB, { limit: 200, query: q || null });
   const { results: latest } = await c.env.DB.prepare(
-    `SELECT m.id, m.subject, m.from_address, m.from_name, m.envelope_from, m.best_code, m.best_link, m.received_at, m.tag, i.address
-     FROM messages m JOIN inboxes i ON i.id = m.inbox_id ORDER BY m.id DESC LIMIT 12`,
+    `SELECT m.id, m.inbox_id, m.subject, m.from_address, m.from_name, m.envelope_from, m.best_code, m.best_link,
+            m.received_at, m.tag, m.attachments_json, i.address
+     FROM messages m JOIN inboxes i ON i.id = m.inbox_id ORDER BY m.id DESC LIMIT 50`,
   ).all<LatestRow>();
   const maxId = latest[0]?.id ?? 0;
   const cfg = config(c.env);
+  const wanted = Number(c.req.query("m") ?? 0);
+  const selected = wanted ? await getMessage(c.env.DB, wanted) : null;
+  const images = c.req.query("images") === "1";
   return page(
     c,
-    "Inboxes",
-    <>
-      <div class="row" style="justify-content:space-between">
-        <div>
-          <h1>Inboxes</h1>
-          <div class="muted small">
-            Mail to any <b class="mono">*@{cfg.domains.join(", *@")}</b>{" "}
-            {cfg.acceptUnknown ? "is accepted (unknown addresses become catch-all inboxes)" : "is accepted only for created inboxes"}.
+    "All mail",
+    { kind: "all" },
+    <main class="main" data-view={selected ? "reader" : "list"}>
+      <section class="list" aria-label="Latest mail">
+        <div class="list-head">
+          <div class="list-title">
+            <h1 class="grow">Latest mail</h1>
+            <LiveBadge url={`/admin/latest?since=${maxId}`} label="Live" />
           </div>
+          <p class="list-meta">Newest across every inbox.</p>
         </div>
-        <span class="live" data-wait={`/admin/latest?since=${maxId}`}>live</span>
-      </div>
-
-      <form method="post" action="/admin/inboxes" class="panel row" style="padding:14px;margin-top:16px">
-        <input name="local" placeholder="name (blank = random)" style="flex:1;min-width:180px" class="mono" />
-        <span class="mono muted">@</span>
-        <select name="domain">{cfg.domains.map((d) => <option>{d}</option>)}</select>
-        <input name="label" placeholder="label (optional)" style="width:180px" />
-        <select name="ttl_hours">
-          <option value="1">1 hour</option>
-          <option value="24">1 day</option>
-          <option value={String(cfg.defaultTtlHours)} selected>{cfg.defaultTtlHours / 24} days</option>
-          <option value={String(cfg.maxTtlHours)}>{Math.round(cfg.maxTtlHours / 24)} days</option>
-        </select>
-        <button>New inbox</button>
-      </form>
-
-      {latest.length ? (
-        <>
-          <h2>Latest mail</h2>
-          <div class="panel">
-            <table>
-              {latest.map((m) => (
-                <tr>
-                  <td class="mono small"><a href={`/admin/inbox/${encodeURIComponent(m.address)}?m=${m.id}`}>{m.tag ? m.address.replace("@", `+${m.tag}@`) : m.address}</a></td>
-                  <td><div class="subj">{m.subject || "(no subject)"}</div><div class="small muted">{m.from_name || m.from_address || m.envelope_from}</div></td>
-                  <td>{m.best_code ? <CodeChip code={m.best_code} /> : m.best_link ? <span class="small"><a href={m.best_link} target="_blank" rel="noopener noreferrer">verification link ↗</a></span> : null}</td>
-                  <td class="small muted" style="white-space:nowrap">{relTime(m.received_at)}</td>
-                </tr>
-              ))}
-            </table>
+        <div class="list-body">
+          {latest.length ? (
+            latest.map((m) => (
+              <MessageItem
+                m={m}
+                href={`/admin?m=${m.id}`}
+                current={selected?.id === m.id}
+                to={m.tag ? m.address.replace("@", `+${m.tag}@`) : m.address}
+              />
+            ))
+          ) : (
+            <div class="list-empty">No mail yet.</div>
+          )}
+        </div>
+      </section>
+      {selected ? (
+        <MessageReader m={selected} base={`/admin/messages/${selected.id}`} images={images} back="/admin" selfUrl={`/admin?m=${selected.id}`} />
+      ) : latest.length ? (
+        <section class="reader">
+          <EmptyState icon="mail" title="Select a message">
+            Codes and verification links are pulled out of every message as it arrives.
+          </EmptyState>
+        </section>
+      ) : (
+        <section class="reader">
+          <div class="reader-body">
+            <div class="reader-inner" style="max-width:640px;margin:48px auto 0">
+              <div class="page-head">
+                <h2 style="font-size:17px">Create your first inbox</h2>
+                <p class="small muted"><DomainNote cfg={cfg} /></p>
+              </div>
+              <NewInboxForm cfg={cfg} />
+            </div>
           </div>
-        </>
-      ) : null}
-
-      <div class="row" style="justify-content:space-between;margin-top:28px">
-        <h2 style="margin:0">All inboxes ({inboxes.length})</h2>
-        <form method="get" class="row"><input name="q" value={q} placeholder="search" /></form>
-      </div>
-      <div class="panel" style="margin-top:10px">
-        {inboxes.length === 0 ? (
-          <div class="empty">No inboxes yet.</div>
-        ) : (
-          <table>
-            <tr><th>Address</th><th>Kind</th><th>Messages</th><th>Last mail</th><th>Expires</th></tr>
-            {inboxes.map((i) => (
-              <tr>
-                <td class="mono"><a href={`/admin/inbox/${encodeURIComponent(i.address)}`}>{i.address}</a>{i.label ? <div class="small muted" style="font-family:var(--sans)">{i.label}</div> : null}</td>
-                <td class="small">{i.origin === "auto" ? "catch-all" : "created"}</td>
-                <td>{i.message_count}</td>
-                <td class="small muted">{relTime(i.last_message_at)}</td>
-                <td class="small muted">{relTime(i.expires_at)}</td>
-              </tr>
-            ))}
-          </table>
-        )}
-      </div>
-    </>,
+        </section>
+      )}
+    </main>,
   );
 });
 
@@ -166,12 +323,10 @@ admin.get("/latest", async (c) => {
 
 function CreatedNotice(props: { created: CreatedInbox; fresh: boolean }) {
   return (
-    <div class="notice">
-      <div style="font-weight:600;margin-bottom:6px">{props.fresh ? "Inbox created." : "New link issued; the old link no longer works."} Save this link now; it is shown only once.</div>
-      <div class="row"><LinkChip url={props.created.url} /></div>
-      <div class="small muted" style="margin-top:8px">
-        Anyone with the link can read this inbox (no login). Paste <span class="mono">{props.created.url}/agents.md</span> to an agent.
-      </div>
+    <div class="alert">
+      <span class="alert-title">{props.fresh ? "Inbox created." : "New share link issued; the old one no longer works."}</span>
+      <span class="xs">Save the share link now, it is shown only once. Anyone with it can read this inbox.</span>
+      <SecretRow value={props.created.url} href />
     </div>
   );
 }
@@ -187,7 +342,18 @@ admin.post("/inboxes", async (c) => {
       ttl_hours: hours(f.ttl_hours),
     });
   } catch (error) {
-    if (error instanceof ApiError) return page(c, "Error", <div class="notice">{error.message} <a href="/admin">Back</a></div>, 400);
+    if (error instanceof ApiError) {
+      return page(
+        c,
+        "New inbox",
+        { kind: "new" },
+        <Page title="New inbox">
+          <div class="alert error"><span class="alert-title">{error.message}</span></div>
+          <NewInboxForm cfg={config(c.env)} />
+        </Page>,
+        400,
+      );
+    }
     throw error;
   }
   return renderInbox(c, created.inbox, <CreatedNotice created={created} fresh />);
@@ -195,39 +361,56 @@ admin.post("/inboxes", async (c) => {
 
 // ---------- one inbox ----------
 
-async function renderInbox(c: Context<AdminEnv>, inbox: InboxRow, notice?: unknown) {
+async function renderInbox(c: AdminContext, inbox: InboxRow, notice?: Child) {
   const messages = await listMessages(c.env.DB, inbox.id, { since: 0, limit: 100, order: "desc" });
-  const selectedId = Number(c.req.query("m") ?? messages[0]?.id ?? 0);
-  const selected = selectedId ? await getMessage(c.env.DB, selectedId) : null;
+  const wanted = Number(c.req.query("m") ?? messages[0]?.id ?? 0);
+  const selected = wanted ? await getMessage(c.env.DB, wanted) : null;
   const enc = encodeURIComponent(inbox.address);
+  const listUrl = `/admin/inbox/${enc}`;
   return page(
     c,
     inbox.address,
-    <>
-      {notice as never}
-      <InboxView
-        inbox={inbox}
-        messages={messages}
-        selected={selected && selected.inbox_id === inbox.id ? selected : null}
-        messageBase={(id) => `/admin/messages/${id}`}
-        waitUrl={`/admin/wait/${enc}?since=${messages[0]?.id ?? 0}`}
-        nextUrl={`/admin/inbox/${enc}`}
-        images={c.req.query("images") === "1"}
-        header={
-          <div class="row small" style="margin-top:12px">
-            <form class="inline" method="post" action={`/admin/inbox/${enc}/extend`}>
-              <input type="hidden" name="ttl_hours" value="168" /><button class="ghost">Keep 7 more days</button>
-            </form>
-            <form class="inline" method="post" action={`/admin/inbox/${enc}/link`} data-confirm={inbox.token_hash ? "Issue a new link? The current link stops working." : ""}>
-              <button class="ghost">{inbox.token_hash ? "New share link" : "Create share link"}</button>
-            </form>
-            <form class="inline" method="post" action={`/admin/inbox/${enc}/delete`} data-confirm={`Delete ${inbox.address} and all its mail?`}>
-              <button class="danger">Delete</button>
-            </form>
-          </div>
-        }
-      />
-    </>,
+    { kind: "inbox", address: inbox.address },
+    <InboxPanes
+      inbox={inbox}
+      messages={messages}
+      selected={selected && selected.inbox_id === inbox.id ? selected : null}
+      explicit={c.req.query("m") !== undefined}
+      listUrl={listUrl}
+      messageBase={(id) => `/admin/messages/${id}`}
+      images={c.req.query("images") === "1"}
+      head={
+        <InboxHead
+          inbox={inbox}
+          waitUrl={`/admin/wait/${enc}?since=${messages[0]?.id ?? 0}`}
+          nextUrl={listUrl}
+          note={notice}
+          actions={
+            <div class="hstack wrap" style="gap:6px">
+              <form class="inline" method="post" action={`${listUrl}/extend`}>
+                <input type="hidden" name="ttl_hours" value={String(config(c.env).defaultTtlHours)} />
+                <button class="btn outline xs">
+                  <Icon name="clock" size="xs" />
+                  <span data-label>Keep {ttlLabel(config(c.env).defaultTtlHours)} more</span>
+                </button>
+              </form>
+              <form class="inline" method="post" action={`${listUrl}/link`} data-confirm={inbox.token_hash ? "Issue a new link? The current link stops working." : ""}>
+                <button class="btn outline xs">
+                  <Icon name="share" size="xs" />
+                  <span data-label>{inbox.token_hash ? "New share link" : "Create share link"}</span>
+                </button>
+              </form>
+              <form class="inline" method="post" action={`${listUrl}/delete`} data-confirm={`Delete ${inbox.address} and all its mail?`}>
+                <button class="btn destructive xs">
+                  <Icon name="trash" size="xs" />
+                  <span data-label>Delete</span>
+                </button>
+              </form>
+            </div>
+          }
+        />
+      }
+    />,
   );
 }
 
@@ -235,7 +418,19 @@ admin.get("/inbox/:address", async (c) => {
   try {
     return await renderInbox(c, await findInbox(c.env, OWNER, c.req.param("address")));
   } catch (error) {
-    if (error instanceof ApiError && error.status === 404) return page(c, "Not found", <div class="empty">Inbox not found. <a href="/admin">Back</a></div>, 404);
+    if (error instanceof ApiError && error.status === 404) {
+      return page(
+        c,
+        "Not found",
+        { kind: "none" },
+        <main class="page" style="display:flex">
+          <EmptyState icon="inbox" title="Inbox not found">
+            It may have expired or been deleted. <a href="/admin">Back to all mail</a>
+          </EmptyState>
+        </main>,
+        404,
+      );
+    }
     throw error;
   }
 });
@@ -296,45 +491,67 @@ admin.get("/messages/:id/attachments/:n", async (c) => {
 
 // ---------- API keys ----------
 
-async function keysPage(c: Context<AdminEnv>, reveal?: { key: string; name: string }) {
+async function keysPage(c: AdminContext, reveal?: { key: string; name: string }) {
   const keys = await listApiKeys(c.env.DB);
   const origin = new URL(c.req.url).origin;
   return page(
     c,
     "API keys",
-    <>
-      <h1>API keys</h1>
-      <p class="muted small">Owner keys for the REST API and the CLI. They can create, read and delete every inbox.</p>
+    { kind: "keys" },
+    <Page title="API keys" desc="Owner keys for the REST API and the CLI. A key can create, read and delete every inbox.">
       {reveal ? (
-        <div class="notice">
-          <div style="font-weight:600;margin-bottom:6px">Key "{reveal.name}" created. Copy it now; it is shown only once.</div>
-          <CodeChip code={reveal.key} />
-          <pre style="margin-top:10px">{`npx mailmint login --url ${origin} --key ${reveal.key}`}</pre>
+        <div class="alert">
+          <span class="alert-title">Key “{reveal.name}” created. Copy it now; it is shown only once.</span>
+          <SecretRow value={reveal.key} />
+          <pre>{`npx mailmint login --url ${origin} --key ${reveal.key}`}</pre>
         </div>
       ) : null}
-      <form method="post" action="/admin/keys" class="panel row" style="padding:14px">
-        <input name="name" placeholder="name, e.g. laptop or ci" required style="flex:1" />
-        <button>Create key</button>
+      <form method="post" action="/admin/keys" class="card">
+        <div class="card-body form-row">
+          <div class="field">
+            <label for="key-name">Name</label>
+            <input id="key-name" class="input" name="name" placeholder="e.g. laptop or ci" required />
+          </div>
+          <button class="btn">
+            <Icon name="plus" />
+            Create key
+          </button>
+        </div>
       </form>
-      <div class="panel" style="margin-top:16px">
-        {keys.length === 0 ? <div class="empty">No keys yet.</div> : (
-          <table>
-            <tr><th>Name</th><th>Key</th><th>Created</th><th>Last used</th><th></th></tr>
-            {keys.map((k) => (
-              <tr style={k.revoked_at ? "opacity:.5" : ""}>
-                <td>{k.name}<div class="small muted">{k.created_by ?? ""}</div></td>
-                <td class="mono small">{k.prefix}…</td>
-                <td class="small muted">{relTime(k.created_at)}</td>
-                <td class="small muted">{relTime(k.last_used_at)}</td>
-                <td>{k.revoked_at ? <span class="small muted">revoked</span> : (
-                  <form method="post" action={`/admin/keys/${k.id}/revoke`} data-confirm={`Revoke ${k.name}?`}><button class="danger small">Revoke</button></form>
-                )}</td>
-              </tr>
-            ))}
+      <div class="card">
+        {keys.length === 0 ? (
+          <div class="list-empty">No keys yet.</div>
+        ) : (
+          <table class="tbl">
+            <thead>
+              <tr><th>Name</th><th>Key</th><th>Created</th><th>Last used</th><th></th></tr>
+            </thead>
+            <tbody>
+              {keys.map((k) => (
+                <tr class={k.revoked_at ? "revoked" : ""}>
+                  <td>
+                    <div style="font-weight:500">{k.name}</div>
+                    {k.created_by ? <div class="xs muted">{k.created_by}</div> : null}
+                  </td>
+                  <td class="mono xs">{k.prefix}…</td>
+                  <td class="xs muted tnum">{relTime(k.created_at)}</td>
+                  <td class="xs muted tnum">{relTime(k.last_used_at)}</td>
+                  <td style="text-align:right">
+                    {k.revoked_at ? (
+                      <span class="badge secondary">revoked</span>
+                    ) : (
+                      <form class="inline" method="post" action={`/admin/keys/${k.id}/revoke`} data-confirm={`Revoke ${k.name}?`}>
+                        <button class="btn destructive xs"><span data-label>Revoke</span></button>
+                      </form>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         )}
       </div>
-    </>,
+    </Page>,
   );
 }
 
@@ -354,51 +571,84 @@ admin.post("/keys/:id/revoke", async (c) => {
 
 // ---------- connect instructions ----------
 
+function Section(props: { icon: IconName; title: string; desc: Child; children: Child }) {
+  return (
+    <section class="card">
+      <div class="card-head">
+        <span class="empty-icon" style="width:32px;height:32px;margin:0">
+          <Icon name={props.icon} size="sm" />
+        </span>
+        <div class="grow">
+          <h2 class="card-title">{props.title}</h2>
+          <p class="card-desc">{props.desc}</p>
+        </div>
+      </div>
+      <div class="card-body vstack">{props.children}</div>
+    </section>
+  );
+}
+
 admin.get("/connect", (c) => {
   const origin = new URL(c.req.url).origin;
   return page(
     c,
     "Connect",
-    <>
-      <h1>Connect agents and tools</h1>
-      <h2>Any AI chat (agent-socket)</h2>
-      <div class="panel" style="padding:14px" data-socket data-relay={AGENT_SOCKET_RELAY}>
-        <p style="margin-top:0">
-          For chats without MCP (claude.ai, ChatGPT, …): this tab becomes an{" "}
-          <a href="https://agentsocket.dev" target="_blank" rel="noopener noreferrer">agent-socket</a> app. Paste the link
-          into the chat; it can then create inboxes, wait for codes and links, and read mail, with your access, while
-          this tab stays open.
-        </p>
-        <div class="row">
-          <button type="button" data-start>Create link</button>
-          <button type="button" class="danger" data-stop hidden>Stop</button>
-          <span class="small" data-status>Not connected.</span>
+    { kind: "connect" },
+    <Page title="Connect agents and tools" desc="Four ways for an agent to create inboxes and wait for codes. All of them use the same operations as this dashboard.">
+      <Section icon="plug" title="Any AI chat (agent-socket)" desc="For chats without MCP (claude.ai, ChatGPT, …). This tab becomes an agent-socket app while it stays open.">
+        <div class="vstack" data-socket data-relay={AGENT_SOCKET_RELAY}>
+          <p class="small">
+            Create a link and paste it into the chat. It can then create inboxes, wait for codes and links, and read mail
+            with your access. Learn more at{" "}
+            <a href="https://agentsocket.dev" target="_blank" rel="noopener noreferrer">agentsocket.dev</a>.
+          </p>
+          <div class="hstack wrap">
+            <button type="button" class="btn" data-start>
+              <Icon name="link" />
+              Create link
+            </button>
+            <button type="button" class="btn destructive" data-stop hidden>Stop</button>
+            <span class="small muted" data-status>Not connected.</span>
+          </div>
+          <div class="hstack" data-link-row hidden style="min-width:0">
+            <span class="mono truncate grow codeblock" style="padding:7px 10px" data-link></span>
+            <button type="button" class="btn outline sm" data-copy-link data-copy="">
+              <Icon name="copy" size="sm" />
+              <span data-label>Copy</span>
+            </button>
+          </div>
+          <p class="xs muted">
+            The link is a key: anyone with it can use these tools until you press Stop or close the tab. Terminal
+            equivalent: <span class="mono">mailmint connect</span>.
+          </p>
+          <ul data-log></ul>
         </div>
-        <div class="row" data-link-row hidden style="margin-top:12px">
-          <span class="chip linkchip"><span class="mono" data-link></span><button type="button" class="ghost" data-copy-link data-copy="">copy</button></span>
-        </div>
-        <p class="small muted" style="margin-bottom:0">The link is a key: anyone with it can use these tools until you press Stop or close the tab. CLI equivalent: <span class="mono">mailmint connect</span>.</p>
-        <ul data-log></ul>
-      </div>
-      <script type="module" src="/assets/connect.js"></script>
-      <h2>CLI</h2>
-      <div class="panel" style="padding:14px">
-        <pre style="margin:0">{`npx mailmint login --url ${origin} --key <key from API keys>
+        <script type="module" src="/assets/connect.js"></script>
+      </Section>
+      <Section icon="terminal" title="CLI" desc="Zero-dependency Node CLI; keys come from the API keys page.">
+        <pre>{`npx mailmint login --url ${origin} --key <key from API keys>
 addr=$(npx mailmint new --label "github signup")
 code=$(npx mailmint wait "$addr" --code)`}</pre>
-      </div>
-      <h2>MCP</h2>
-      <div class="panel" style="padding:14px">
-        <p style="margin-top:0">Server URL (OAuth; you approve each client here):</p>
-        <pre>{`${origin}/mcp`}</pre>
-        <p>Claude Code:</p>
-        <pre>{`claude mcp add --transport http mailmint ${origin}/mcp`}</pre>
-      </div>
-      <h2>Any agent</h2>
-      <div class="panel" style="padding:14px">
-        <p style="margin:0">Give it <a href="/agents.md" class="mono">{origin}/agents.md</a> plus an API key, or create an inbox and paste its
-        share link + <span class="mono">/agents.md</span> (no key needed, one inbox only).</p>
-      </div>
-    </>,
+      </Section>
+      <Section icon="at" title="MCP" desc="OAuth: you approve each client on this instance.">
+        <div class="field">
+          <label>Server URL</label>
+          <div class="hstack">
+            <pre class="grow">{`${origin}/mcp`}</pre>
+            <CopyButton value={`${origin}/mcp`} />
+          </div>
+        </div>
+        <div class="field">
+          <label>Claude Code</label>
+          <pre>{`claude mcp add --transport http mailmint ${origin}/mcp`}</pre>
+        </div>
+      </Section>
+      <Section icon="book" title="Any agent" desc="Plain HTTP, described in markdown.">
+        <p class="small">
+          Give it <a href="/agents.md" class="mono">{origin}/agents.md</a> plus an API key, or create an inbox and paste its
+          share link + <span class="mono">/agents.md</span> (no key needed, one inbox only).
+        </p>
+      </Section>
+    </Page>,
   );
 });

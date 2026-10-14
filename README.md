@@ -16,6 +16,8 @@ Why not sharklasers / mail.tm / 10minutemail? Their domains are on every disposa
 on someone else's server, and none of them give agents a "wait for the code" call. A private domain you own has
 none of those problems.
 
+![The instance's landing page: an isometric mail-sorting bench shows one email going from the catch-all slot to the code on a split-flap display](docs/images/landing.png)
+
 ![The owner dashboard: latest mail across every inbox with the extracted codes and verification links](docs/images/dashboard.png)
 
 ![The CLI: create an address, then block until the verification code arrives](docs/images/cli.png)
@@ -67,8 +69,8 @@ REST /v1 (API key) ─┐
 ```
 
 One Worker, deployed with `wrangler`. TypeScript, Hono, hono/jsx server-rendered UI. `npm run build` only
-regenerates the single-file CLI bundle and two vendored browser scripts; they are committed, and `npm test`
-fails if they are stale.
+regenerates the single-file CLI bundle, two vendored browser scripts and the landing page figure; they are
+committed, and `npm test` fails if they are stale.
 
 | Inbox (owner view) | Share link (one inbox, no login) |
 |---|---|

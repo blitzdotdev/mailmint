@@ -3,3 +3,9 @@ declare module "*.client.js" {
   const source: string;
   export default source;
 }
+
+// Fonts bundled as bytes (wrangler.jsonc `rules`, type Data) and served from /assets/fonts/.
+declare module "*.woff2" {
+  const bytes: ArrayBuffer;
+  export default bytes;
+}

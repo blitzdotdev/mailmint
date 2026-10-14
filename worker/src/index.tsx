@@ -10,11 +10,13 @@ import { purge } from "./purge.ts";
 import { getMessage, listMessages } from "./store/messages.ts";
 import { admin } from "./ui/admin.tsx";
 import { inboxAgentsMd, serviceAgentsMd } from "./ui/docs.ts";
+import { FONTS } from "./ui/fonts.ts";
 import { CSS, JS, PAGE_HEADERS } from "./ui/layout.tsx";
 import agentSocketSdk from "./vendor/agent-socket-sdk.client.js";
 import socketTools from "./vendor/socket-tools.client.js";
 import connectPage from "./ui/connect.client.js";
-import { CapabilityPage, LandingPage } from "./ui/views.tsx";
+import { CapabilityPage } from "./ui/views.tsx";
+import { LANDING_CSS, LANDING_JS, LandingPage } from "./ui/landing.tsx";
 
 export { InboxSignal } from "./signal.ts";
 
@@ -56,6 +58,8 @@ function html(c: Context, node: unknown) {
 
 app.get("/assets/app.css", (c) => c.body(CSS, 200, { "Content-Type": "text/css; charset=utf-8", "Cache-Control": "public, max-age=300" }));
 app.get("/assets/app.js", (c) => c.body(JS, 200, { "Content-Type": "text/javascript; charset=utf-8", "Cache-Control": "public, max-age=300" }));
+app.get("/assets/landing.css", (c) => c.body(LANDING_CSS, 200, { "Content-Type": "text/css; charset=utf-8", "Cache-Control": "public, max-age=300" }));
+app.get("/assets/landing.js", (c) => c.body(LANDING_JS, 200, { "Content-Type": "text/javascript; charset=utf-8", "Cache-Control": "public, max-age=300" }));
 for (const [path, source] of [
   ["/assets/agent-socket-sdk.js", agentSocketSdk],
   ["/assets/socket-tools.js", socketTools],
@@ -63,13 +67,27 @@ for (const [path, source] of [
 ] as const) {
   app.get(path, (c) => c.body(source, 200, { "Content-Type": "text/javascript; charset=utf-8", "Cache-Control": "public, max-age=300" }));
 }
+for (const [name, bytes] of Object.entries(FONTS)) {
+  app.get(`/assets/fonts/${name}`, (c) =>
+    c.body(bytes, 200, { "Content-Type": "font/woff2", "Cache-Control": "public, max-age=31536000, immutable" }),
+  );
+}
 app.get("/healthz", (c) => c.json({ ok: true }));
 
 app.get("/", (c) => {
   const origin = new URL(c.req.url).origin;
   const cfg = config(c.env);
   if (!wantsHtml(c)) return markdown(c, serviceAgentsMd(origin, cfg));
-  return html(c, <LandingPage origin={origin} domain={cfg.domains[0] ?? ""} acceptUnknown={cfg.acceptUnknown} />);
+  return html(
+    c,
+    <LandingPage
+      origin={origin}
+      domain={cfg.domains[0] ?? ""}
+      acceptUnknown={cfg.acceptUnknown}
+      defaultTtlHours={cfg.defaultTtlHours}
+      autoTtlHours={cfg.autoTtlHours}
+    />,
+  );
 });
 
 for (const path of ["/agents.md", "/llms.txt", "/.well-known/agents.md"]) {
@@ -101,6 +119,7 @@ capability.get("/", async (c) => {
       inbox={p.inbox}
       messages={messages}
       selected={selected && selected.inbox_id === p.inbox.id ? selected : null}
+      explicit={c.req.query("m") !== undefined}
       token={token}
       images={c.req.query("images") === "1"}
     />,
