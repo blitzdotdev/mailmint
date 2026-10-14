@@ -100,11 +100,13 @@ const FLAP = { w: 5.6, h: 10.2, gap: 0.9, mid: 3.2, z0: 12.2 };
 export function buildFigure() {
   const pts = [
     ...k.boxCorners(PLATE, -PLATE_H - FOOT_H, 0),
+    // The cabinet's top is the highest edge on screen; without it the fit lets it overflow.
+    ...k.boxCorners(CAB, CAB_Z0, CAB_Z1 + 3),
     [BELL.x, BELL.y, BELL.top + 2],
     [SOL.x, SOL.y, SOL_Z1],
     [HOP.x, HOP.y + HOP.d, DROP.z0 + 12],
   ];
-  const P = k.fitProjection(pts, WIDTH, HEIGHT, { pad: 16, azimuth: AZIMUTH });
+  const P = k.fitProjection(pts, WIDTH, HEIGHT, { pad: 16, headroom: 12, azimuth: AZIMUTH });
   const at = (p) => k.iso(p, P);
   const depth = (p) => k.depthOf(p, P);
   const fmt = (n) => +n.toFixed(2);

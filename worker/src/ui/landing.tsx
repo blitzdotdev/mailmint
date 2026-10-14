@@ -110,7 +110,6 @@ figure{margin:28px 0 0}
 .iso-legend .iso-caption b{color:var(--ink);font-weight:550}
 .mm-send{position:absolute;left:20px;bottom:13px;z-index:1;appearance:none;font:550 12.5px/1 var(--sans);color:#fff;background:var(--accent);border:0;border-radius:7px;padding:7px 11px;cursor:pointer}
 .mm-send:hover{background:var(--accent-hover)}
-.mm-send:disabled{opacity:.55;cursor:default}
 .mm-stage{position:relative}
 @media (max-width:640px){
   .iso-plate{padding:42px 10px 66px}
@@ -132,11 +131,11 @@ figure{margin:28px 0 0}
 
 .code{margin:22px 0 0;border:1px solid var(--rule);border-radius:10px;background:#fff;overflow:hidden}
 .code .bar{display:flex;justify-content:space-between;gap:12px;padding:8px 14px;border-bottom:1px solid var(--rule);font-size:12.5px;color:var(--muted)}
-.code pre{margin:0;padding:14px 16px 16px;overflow-x:auto;font:12.6px/1.62 var(--mono);color:#2b2b30;tab-size:2}
+.code pre{margin:0;padding:14px 16px 16px;overflow-x:auto;white-space:pre-wrap;overflow-wrap:anywhere;font:12.6px/1.62 var(--mono);color:#2b2b30;tab-size:2}
 .code .c{color:#9a9aa0}.code .s{color:#0f7b55}.code .k{color:#1a5fd6}.code .p{color:#9a9aa0;user-select:none}.code .o{color:var(--ink)}
 .term{margin:34px 0 0}
 .term .iso-plate{padding:46px 22px 24px}
-.term pre{margin:0;padding:16px 18px;border-radius:10px;background:#18181b;color:#e6e6e8;overflow-x:auto;font:13px/1.7 var(--mono);box-shadow:0 1px 0 #ffffff14 inset,0 18px 40px -22px #0000005c}
+.term pre{margin:0;padding:16px 18px;border-radius:10px;background:#18181b;color:#e6e6e8;overflow-x:auto;white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.7 var(--mono);box-shadow:0 1px 0 #ffffff14 inset,0 18px 40px -22px #0000005c}
 .term .p{color:#7c7c84;user-select:none}.term .c{color:#7c7c84}.term .hl{color:#7ee0c0;font-weight:600}
 
 table{width:100%;border-collapse:collapse;margin:18px 0 0;font-size:14px}
@@ -253,7 +252,8 @@ const TOC: [string, string][] = [
 export function LandingPage(props: LandingProps) {
   const { origin } = props;
   const domain = props.domain || "example.com";
-  const sample = `quiet-otter-4k7m@${domain}`;
+  const sampleName = "quiet-otter-4k7m";
+  const sample = `${sampleName}@${domain}`;
   const anyAddress = props.acceptUnknown;
   const figureData = JSON.stringify({ ...FIGURE_DATA, address: sample, reduced: false });
 
@@ -514,7 +514,7 @@ export function LandingPage(props: LandingProps) {
                           `<span class="p">$ </span>npx mailmint new --label "acme sign-up"`,
                           esc(sample),
                           `<span class="c"># the agent submits the address in acme's sign-up form</span>`,
-                          `<span class="p">$ </span>npx mailmint wait ${esc(sample)} --code --timeout 3m`,
+                          `<span class="p">$ </span>npx mailmint wait ${esc(sampleName)} --code --timeout 3m`,
                           `<span class="hl">482913</span>`,
                         ].join("\n"),
                       )}
@@ -535,10 +535,11 @@ export function LandingPage(props: LandingProps) {
                 note="API reference: /agents.md"
                 label="Creating an inbox and waiting for its code over the REST API"
                 lines={[
-                  `$ curl -s -X POST ${origin}/v1/inboxes -H «"Authorization: Bearer $MAILMINT_KEY"»`,
-                  `# {"address":"${sample}","token":"mm_in_…","url":"…/i/mm_in_…",…}`,
-                  `$ curl -s «"${origin}/v1/inboxes/quiet-otter-4k7m/wait?extract=code&timeout=120"» \\`,
-                  `    -H «"Authorization: Bearer $MAILMINT_KEY"» | jq -r .message.code`,
+                  `$ MM=${origin}`,
+                  `$ addr=$(curl -s -X POST $MM/v1/inboxes \\`,
+                  `    -H «"Authorization: Bearer $MAILMINT_KEY"» | jq -r .address)`,
+                  `$ curl -s -H «"Authorization: Bearer $MAILMINT_KEY"» \\`,
+                  `    «"$MM/v1/inboxes/$addr/wait?extract=code"» | jq -r .message.code`,
                 ]}
               />
               <p>
@@ -555,7 +556,7 @@ export function LandingPage(props: LandingProps) {
                 title="curl"
                 note="no API key"
                 label="Waiting for a verification link through a share link"
-                lines={[`$ curl -s «"${origin}/i/mm_in_…/wait?extract=link"» | jq -r .message.link`]}
+                lines={[`$ curl -s «"${origin}/i/mm_in_…/wait?extract=link"» \\`, `    | jq -r .message.link`]}
               />
 
               <h3>MCP, or any AI chat</h3>

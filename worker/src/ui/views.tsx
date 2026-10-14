@@ -8,12 +8,27 @@ function sender(m: MessageRow): string {
   return m.from_name || m.from_address || m.envelope_from || "unknown sender";
 }
 
+/** Initial on a tint picked from the sender address (mailroom's palette); no remote avatar images. */
+function Avatar(props: { m: MessageRow; size?: "lg" }) {
+  const seed = (props.m.from_address || props.m.envelope_from || sender(props.m)).toLowerCase();
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (Math.imul(31, h) + seed.charCodeAt(i)) | 0;
+  const name = sender(props.m).replace(/^["'\s]+/, "");
+  return (
+    <span class={`avatar av${Math.abs(h) % 4}${props.size === "lg" ? " lg" : ""}`} aria-hidden="true">
+      {(name[0] ?? "?").toUpperCase()}
+    </span>
+  );
+}
+
 /** One row in a message list (mailroom's thread row). `to` shows the address, for lists across inboxes. */
 export function MessageItem(props: { m: MessageRow; href: string; current: boolean; to?: string }) {
   const { m } = props;
   const attachments = parseJson<StoredAttachment[]>(m.attachments_json, []).length;
   return (
     <a class="item" href={props.href} aria-current={props.current ? "true" : undefined}>
+      <Avatar m={m} />
+      <span class="item-main">
       <span class="item-top">
         <span class="item-from truncate">{sender(m)}</span>
         <span class="item-time">{relTime(m.received_at)}</span>
@@ -38,6 +53,7 @@ export function MessageItem(props: { m: MessageRow; href: string; current: boole
           ) : null}
         </span>
       ) : null}
+      </span>
     </a>
   );
 }
@@ -53,9 +69,11 @@ export function MessageReader(props: { m: MessageRow; base: string; images: bool
   return (
     <section class="reader" aria-label="Message">
       <header class="reader-head">
+        <div class="reader-head-inner">
         <a class="btn ghost icon back-link" href={props.back} aria-label="Back to the list">
           <Icon name="back" />
         </a>
+        <Avatar m={m} size="lg" />
         <div class="grow">
           <h2 class="truncate">{m.subject || "(no subject)"}</h2>
           <div class="reader-meta">
@@ -75,36 +93,35 @@ export function MessageReader(props: { m: MessageRow; base: string; images: bool
           <Icon name="download" size="sm" />
           .eml
         </a>
+        </div>
       </header>
       <div class="reader-body">
         <div class="reader-inner">
-          {m.best_code || m.best_link ? (
-            <div class="extract">
-              {m.best_code ? (
-                <div>
-                  <span class="extract-label">
-                    <Icon name="hash" size="xs" />
-                    Code
-                  </span>
-                  <span class="code-value grow">{m.best_code}</span>
-                  <CopyButton value={m.best_code} label="Copy" />
-                </div>
-              ) : null}
-              {m.best_link ? (
-                <div>
-                  <span class="extract-label">
-                    <Icon name="link" size="xs" />
-                    Verification link
-                  </span>
-                  <a class="link-value truncate grow" href={m.best_link} target="_blank" rel="noopener noreferrer">
-                    {m.best_link}
-                  </a>
-                  <a class="btn outline sm icon" href={m.best_link} target="_blank" rel="noopener noreferrer" title="Open" aria-label="Open">
-                    <Icon name="external" size="sm" />
-                  </a>
-                  <CopyButton value={m.best_link} />
-                </div>
-              ) : null}
+          {m.best_code ? (
+            <div class="code-card">
+              <div class="vstack" style="gap:2px">
+                <span class="extract-label">Verification code</span>
+                <span class="code-value">{m.best_code}</span>
+              </div>
+              <CopyButton value={m.best_code} label="Copy code" variant="outline" />
+            </div>
+          ) : null}
+          {m.best_link ? (
+            <div class="link-card">
+              <span class="extract-label">
+                <Icon name="link" size="xs" />
+                Verification link
+              </span>
+              <div class="hstack" style="min-width:0">
+                <a class="link-value truncate grow" href={m.best_link} target="_blank" rel="noopener noreferrer" title={m.best_link}>
+                  {m.best_link}
+                </a>
+                <a class="btn outline sm" href={m.best_link} target="_blank" rel="noopener noreferrer">
+                  <Icon name="external" size="sm" />
+                  Open
+                </a>
+                <CopyButton value={m.best_link} />
+              </div>
             </div>
           ) : null}
           {codes.length || links.length ? (
@@ -154,7 +171,7 @@ export function MessageReader(props: { m: MessageRow; base: string; images: bool
                 title="Message HTML"
               ></iframe>
             ) : (
-              <pre>{m.text_body ?? ""}</pre>
+              <div class="plain">{m.text_body ?? ""}</div>
             )}
           </div>
           {hasHtml && m.text_body ? (

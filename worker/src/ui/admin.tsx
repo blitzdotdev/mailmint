@@ -252,14 +252,16 @@ admin.get("/", async (c) => {
   ).all<LatestRow>();
   const maxId = latest[0]?.id ?? 0;
   const cfg = config(c.env);
-  const wanted = Number(c.req.query("m") ?? 0);
+  // Like an inbox, open on the newest message (phones still start on the list).
+  const explicit = c.req.query("m") !== undefined;
+  const wanted = Number(c.req.query("m") ?? latest[0]?.id ?? 0);
   const selected = wanted ? await getMessage(c.env.DB, wanted) : null;
   const images = c.req.query("images") === "1";
   return page(
     c,
     "All mail",
     { kind: "all" },
-    <main class="main" data-view={selected ? "reader" : "list"}>
+    <main class="main" data-view={explicit && selected ? "reader" : "list"}>
       <section class="list" aria-label="Latest mail">
         <div class="list-head">
           <div class="list-title">

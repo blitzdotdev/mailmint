@@ -248,12 +248,11 @@ function figure(stage) {
   function finish() {
     shown = run.code;
     run = null;
-    if (send) send.disabled = false;
     idleSince = performance.now();
     schedule();
   }
   function start() {
-    if (run) return;
+    // A send while one is running replays from the top with the next code.
     const code = CODES[next++ % CODES.length];
     lastPhase = -1;
     if (still.matches) {
@@ -264,7 +263,6 @@ function figure(stage) {
       return;
     }
     run = { t: 0, code };
-    if (send) send.disabled = true;
     kick();
   }
   function schedule() {
